@@ -1,13 +1,45 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en" style="color-scheme: light only;">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FLOWGEN — AI DJ & Music Studio</title>
+  <meta charset="UTF-8"/>
+  <meta name="color-scheme" content="light only"/>
+  <meta name="theme-color" content="#F7F5F0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FLOWGEN — AI DJ &amp; Music Studio</title>
+  <meta name="description" content="AI-powered music code generator and rap flow analyzer. Generate Strudel live-coding patterns by genre, mood, and BPM. Free, no sign-up required."/>
+  <meta name="keywords" content="AI music generator, strudel live coding, rap flow analyzer, AI DJ tool, music code generator 2026"/>
+  <link rel="canonical" href="https://flowgen.pages.dev/"/>
+  <!-- OG / Twitter -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="FLOWGEN"/>
+  <meta property="og:url" content="https://flowgen.pages.dev/"/>
+  <meta property="og:title" content="FLOWGEN — AI DJ &amp; Music Studio"/>
+  <meta property="og:description" content="AI-powered music code generator and rap flow analyzer. Generate Strudel patterns by genre, mood, and BPM. Free."/>
+  <meta property="og:image" content="https://flowgen.pages.dev/og-default.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="FLOWGEN — AI DJ &amp; Music Studio"/>
+  <meta name="twitter:description" content="AI music code generator. Generate Strudel live-coding patterns by genre, mood, BPM. Free."/>
+  <meta name="twitter:image" content="https://flowgen.pages.dev/og-default.png"/>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FLOWGEN","description":"AI-powered music code generator and rap flow analyzer","url":"https://flowgen.pages.dev","applicationCategory":"MusicApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #F7F5F0 !important;
+      --surface: #FFFFFF !important;
+      --surface2: #F0EDE6 !important;
+      --border: #DDD9D0 !important;
+      --text: #1A1814 !important;
+      --text2: #6B6760 !important;
+    }
+    body { background: #F7F5F0 !important; color: #1A1814 !important; }
+  }
+
 
   :root {
     --bg: #F7F5F0;
@@ -1037,5 +1069,10 @@ function renderFlow(data) {
   });
 }
 </script>
+
+<footer style="border-top:1.5px solid var(--border);padding:16px 2rem;display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-family:var(--mono);font-size:0.7rem;color:var(--text2);letter-spacing:0.06em">
+  <span>FLOW<span style="color:var(--accent)">GEN</span> — AI Music Studio</span>
+  <span>Powered by Claude · <a href="https://strudel.cc" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">strudel.cc</a> · Free &amp; Open</span>
+</footer>
 </body>
 </html>
