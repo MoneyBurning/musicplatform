@@ -1,1078 +1,836 @@
 <!DOCTYPE html>
-<html lang="en" style="color-scheme: light only;">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="color-scheme" content="light only"/>
-  <meta name="theme-color" content="#F7F5F0"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FLOWGEN — AI DJ &amp; Music Studio</title>
-  <meta name="description" content="AI-powered music code generator and rap flow analyzer. Generate Strudel live-coding patterns by genre, mood, and BPM. Free, no sign-up required."/>
-  <meta name="keywords" content="AI music generator, strudel live coding, rap flow analyzer, AI DJ tool, music code generator 2026"/>
-  <link rel="canonical" href="https://flowgen.pages.dev/"/>
-  <!-- OG / Twitter -->
-  <meta property="og:type" content="website"/>
-  <meta property="og:site_name" content="FLOWGEN"/>
-  <meta property="og:url" content="https://flowgen.pages.dev/"/>
-  <meta property="og:title" content="FLOWGEN — AI DJ &amp; Music Studio"/>
-  <meta property="og:description" content="AI-powered music code generator and rap flow analyzer. Generate Strudel patterns by genre, mood, and BPM. Free."/>
-  <meta property="og:image" content="https://flowgen.pages.dev/og-default.png"/>
-  <meta property="og:image:width" content="1200"/>
-  <meta property="og:image:height" content="630"/>
-  <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="FLOWGEN — AI DJ &amp; Music Studio"/>
-  <meta name="twitter:description" content="AI music code generator. Generate Strudel live-coding patterns by genre, mood, BPM. Free."/>
-  <meta name="twitter:image" content="https://flowgen.pages.dev/og-default.png"/>
-  <!-- JSON-LD -->
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FLOWGEN","description":"AI-powered music code generator and rap flow analyzer","url":"https://flowgen.pages.dev","applicationCategory":"MusicApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="color-scheme" content="light only"/>
+<title>FLOWGEN — AI DJ & Music Studio</title>
+<meta name="description" content="AI로 음악을 만드세요. 장르·분위기·악기 선택 → Strudel 라이브코딩 패턴 즉시 생성. 무료."/>
+<meta property="og:title" content="FLOWGEN — AI DJ & Music Studio"/>
+<meta property="og:description" content="AI로 음악을 만드세요. 장르·분위기·악기 선택 → Strudel 라이브코딩 패턴 즉시 생성."/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #F7F5F0 !important;
-      --surface: #FFFFFF !important;
-      --surface2: #F0EDE6 !important;
-      --border: #DDD9D0 !important;
-      --text: #1A1814 !important;
-      --text2: #6B6760 !important;
-    }
-    body { background: #F7F5F0 !important; color: #1A1814 !important; }
-  }
-
-
   :root {
     --bg: #F7F5F0;
     --surface: #FFFFFF;
-    --surface2: #F0EDE6;
-    --border: #DDD9D0;
-    --text: #1A1814;
-    --text2: #6B6760;
+    --border: #E2DED6;
     --accent: #2B5CE6;
-    --accent2: #E6452B;
-    --accent3: #2BCE8A;
+    --accent-hover: #1E45C2;
+    --accent-soft: #EEF2FF;
+    --text: #1A1A1A;
+    --text-muted: #6B6860;
+    --success: #0F9B6E;
+    --success-soft: #ECFDF5;
+    --red: #E63946;
+    --red-soft: #FFF1F2;
     --mono: 'Space Mono', monospace;
     --sans: 'Space Grotesk', sans-serif;
+    --radius: 10px;
+    --radius-sm: 6px;
   }
-
+  html { color-scheme: light only; }
   body {
+    font-family: var(--sans);
     background: var(--bg);
     color: var(--text);
-    font-family: var(--sans);
     min-height: 100vh;
-  }
-
-  /* HEADER */
-  header {
-    border-bottom: 1.5px solid var(--border);
-    padding: 0 2rem;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    background: var(--surface);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    flex-direction: column;
   }
 
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,245,240,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; height: 58px;
+  }
   .logo {
-    font-family: var(--mono);
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: -0.02em;
-    color: var(--text);
+    font-family: var(--mono); font-size: 1.15rem; font-weight: 700;
+    letter-spacing: -0.03em; color: var(--text); text-decoration: none;
   }
-
   .logo span { color: var(--accent); }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    font-family: var(--sans); font-size: 0.82rem; font-weight: 600;
+    padding: 6px 16px; border-radius: 999px; border: 1.5px solid transparent;
+    cursor: pointer; transition: all .18s; background: transparent; color: var(--text-muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-tab.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .nav-tab:not(.active):hover { border-color: var(--border); color: var(--text); }
 
-  .mode-tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 4px;
+  /* ── LAYOUT ── */
+  main { flex: 1; display: flex; gap: 0; }
+  .panel-left {
+    width: 420px; min-width: 320px; max-width: 480px;
+    border-right: 1px solid var(--border);
+    padding: 28px 28px 40px;
+    overflow-y: auto; display: flex; flex-direction: column; gap: 22px;
+  }
+  .panel-right {
+    flex: 1; padding: 28px;
+    display: flex; flex-direction: column; gap: 16px;
+    min-width: 0;
   }
 
-  .mode-tab {
-    font-family: var(--sans);
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 6px 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background: transparent;
-    color: var(--text2);
-    transition: all 0.15s;
-    letter-spacing: 0.02em;
+  /* ── TAB CONTENT ── */
+  .tab-content { display: none; }
+  .tab-content.active { display: contents; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
   }
 
-  .mode-tab.active {
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  /* ── TEXTAREA ── */
+  .prompt-wrap { display: flex; flex-direction: column; gap: 6px; }
+  textarea {
+    width: 100%; min-height: 90px; padding: 12px 14px;
+    font-family: var(--sans); font-size: 0.9rem; line-height: 1.55;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    background: var(--surface); color: var(--text);
+    resize: vertical; transition: border-color .15s; outline: none;
   }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: #B8B4AC; }
 
-  /* MAIN LAYOUT */
-  main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    height: calc(100vh - 56px);
-  }
-
-  .panel {
-    padding: 2rem;
-    border-right: 1.5px solid var(--border);
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .panel:last-child { border-right: none; }
-
-  .panel-label {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--text2);
-    text-transform: uppercase;
-  }
-
-  /* INPUT AREA */
-  .input-block { display: flex; flex-direction: column; gap: 0.6rem; }
-
-  .input-block label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text2);
-    letter-spacing: 0.02em;
-  }
-
-  textarea, input[type="text"], select {
-    font-family: var(--sans);
-    font-size: 0.9rem;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    color: var(--text);
-    resize: none;
-    width: 100%;
-    transition: border-color 0.15s;
-    outline: none;
-  }
-
-  textarea:focus, input:focus, select:focus {
-    border-color: var(--accent);
-  }
-
-  textarea { min-height: 100px; line-height: 1.6; }
-
-  /* CHIPS */
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-
+  /* ── CHIPS ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
   .chip {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 5px 13px; border-radius: 999px;
     border: 1.5px solid var(--border);
-    background: var(--surface);
-    cursor: pointer;
-    transition: all 0.12s;
-    color: var(--text2);
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    font-size: 0.78rem; font-weight: 500; cursor: pointer;
+    transition: all .15s; background: var(--surface); color: var(--text);
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .chip.active-mood { background: var(--text); color: #fff; border-color: var(--text); }
+  .chip.active-instr { background: var(--success); color: #fff; border-color: var(--success); }
+
+  /* ── BPM SLIDER ── */
+  .bpm-row { display: flex; align-items: center; justify-content: space-between; }
+  .bpm-val { font-family: var(--mono); font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 4px;
+    border-radius: 2px; background: var(--border); margin-top: 10px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(43,92,230,.15);
   }
 
-  .chip:hover, .chip.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: #EEF2FF;
+  /* ── COMPLEXITY ── */
+  .complexity-row { display: flex; gap: 8px; }
+  .complexity-btn {
+    flex: 1; padding: 8px 4px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border); font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; background: var(--surface); color: var(--text-muted);
+    transition: all .15s; text-align: center;
   }
+  .complexity-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
-  .chip.red:hover, .chip.red.active {
-    border-color: var(--accent2);
-    color: var(--accent2);
-    background: #FFF0EE;
+  /* ── GENERATE BTN ── */
+  .btn-gen {
+    width: 100%; padding: 14px; border-radius: var(--radius);
+    background: var(--accent); color: #fff;
+    font-family: var(--sans); font-size: 0.92rem; font-weight: 700;
+    border: none; cursor: pointer; transition: background .15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
+  .btn-gen:hover { background: var(--accent-hover); }
+  .btn-gen:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* BPM SLIDER */
-  .bpm-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .bpm-val {
-    font-family: var(--mono);
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--accent);
-    min-width: 52px;
-  }
-
-  input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    flex: 1;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    border: none;
-    padding: 0;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-  }
-
-  /* GENERATE BUTTON */
-  .btn-generate {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    padding: 0.85rem 1.5rem;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.15s;
-    width: 100%;
-  }
-
-  .btn-generate:hover { background: #1A3FCC; transform: translateY(-1px); }
-  .btn-generate:active { transform: translateY(0); }
-  .btn-generate:disabled { background: var(--border); color: var(--text2); cursor: not-allowed; transform: none; }
-
-  /* OUTPUT PANEL */
-  .output-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    height: 100%;
-  }
-
-  /* CODE BLOCK */
-  .code-block {
-    background: #1A1814;
-    border-radius: 10px;
-    overflow: hidden;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 180px;
-  }
-
+  /* ── RIGHT PANEL ── */
   .code-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
   }
-
-  .code-dots { display: flex; gap: 5px; }
-  .code-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .code-dot:nth-child(1) { background: #FF5F57; }
-  .code-dot:nth-child(2) { background: #FFBD2E; }
-  .code-dot:nth-child(3) { background: #28CA41; }
-
-  .code-lang {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: rgba(255,255,255,0.35);
-    letter-spacing: 0.1em;
+  .code-title-row { display: flex; align-items: center; gap: 10px; }
+  .code-label {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase;
   }
-
-  .btn-copy {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.5);
-    background: none;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px;
-    padding: 3px 8px;
-    cursor: pointer;
-    letter-spacing: 0.06em;
-    transition: all 0.12s;
+  .line-count {
+    font-family: var(--mono); font-size: 0.7rem;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 2px 8px; border-radius: 999px;
   }
-
-  .btn-copy:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
-
-  .code-body {
-    padding: 1rem;
-    flex: 1;
-    overflow-y: auto;
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    line-height: 1.7;
-    color: #C8C4BA;
-    white-space: pre-wrap;
-    word-break: break-all;
+  .code-actions { display: flex; gap: 6px; }
+  .btn-sm {
+    padding: 6px 14px; border-radius: var(--radius-sm);
+    font-size: 0.75rem; font-weight: 600; cursor: pointer;
+    border: 1.5px solid var(--border); background: var(--surface);
+    color: var(--text); transition: all .15s;
   }
+  .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm.primary {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+  .btn-sm.primary:hover { background: var(--accent-hover); }
+
+  /* ── CODE BOX ── */
+  .code-box {
+    flex: 1; background: #12131A; border-radius: var(--radius);
+    padding: 20px; overflow: auto; position: relative; min-height: 280px;
+  }
+  .code-box pre {
+    font-family: var(--mono); font-size: 0.82rem; line-height: 1.7;
+    color: #E8E6DF; white-space: pre; tab-size: 2;
+  }
+  /* syntax highlight */
+  .tok-fn   { color: #79B8FF; }
+  .tok-str  { color: #9ECBFF; }
+  .tok-num  { color: #F78166; }
+  .tok-cmt  { color: #6A737D; font-style: italic; }
+  .tok-kw   { color: #F97583; }
+  .tok-meth { color: #B392F0; }
 
   .code-placeholder {
-    color: rgba(255,255,255,0.2);
-    font-style: italic;
+    font-family: var(--mono); font-size: 0.82rem; color: #4A4D5E;
+    line-height: 1.7; white-space: pre-wrap;
   }
 
-  /* STRUDEL PLAY BUTTON */
-  .btn-strudel {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    padding: 0.7rem 1.2rem;
-    background: transparent;
-    color: var(--accent3);
-    border: 1.5px solid var(--accent3);
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.15s;
-    width: 100%;
-    justify-content: center;
+  /* ── INFO CARDS ── */
+  .info-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
   }
+  .info-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+  }
+  .info-card-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .info-card-val { font-family: var(--mono); font-size: 1.05rem; font-weight: 700; color: var(--text); }
 
-  .btn-strudel:hover { background: var(--accent3); color: #fff; }
-
-  /* FLOW DISPLAY */
-  .flow-display {
+  /* ── STRUDEL EMBED ── */
+  .embed-wrap {
+    border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--border);
     background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 1.25rem;
-    flex: 1;
-    min-height: 180px;
-    overflow-y: auto;
+  }
+  .embed-header {
+    padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .embed-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+  iframe#strudel-frame {
+    width: 100%; height: 320px; border: none; display: block;
   }
 
-  .flow-line {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    flex-wrap: wrap;
+  /* ── RAP FLOW ── */
+  .flow-visual {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    font-family: var(--mono); font-size: 0.85rem; line-height: 2;
+    min-height: 160px;
   }
+  .beat-strong { color: var(--accent); font-weight: 700; font-size: 1.05em; }
+  .beat-mid    { color: var(--text); }
+  .beat-weak   { color: var(--text-muted); }
+  .beat-bar    { display: inline-block; width: 1px; height: 1em; background: var(--border); margin: 0 6px; vertical-align: middle; }
 
-  .flow-word {
-    font-family: var(--mono);
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.02em;
-  }
-
-  .flow-word.KICK {
-    color: var(--accent2);
-    font-size: 1rem;
-  }
-
-  .flow-word.SNARE {
-    color: var(--accent);
-    font-size: 1rem;
-  }
-
-  .flow-word.stressed {
-    color: var(--accent);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-  }
-
-  .flow-beat {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--text2);
-    opacity: 0.5;
-    margin-right: 0.5rem;
-  }
-
-  .flow-breath {
-    font-size: 0.7rem;
-    color: var(--accent3);
-    font-family: var(--mono);
-  }
-
-  /* STATS ROW */
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
-
+  .stat-row { display: flex; gap: 10px; }
   .stat-card {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 0.75rem;
-    text-align: center;
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 16px; text-align: center;
+  }
+  .stat-num { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .stat-lbl { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── SPINNER ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin .7s linear infinite;
   }
 
-  .stat-val {
-    font-family: var(--mono);
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--accent);
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: #fff; padding: 10px 20px;
+    border-radius: 999px; font-size: 0.82rem; font-weight: 600;
+    transition: transform .25s; z-index: 999; pointer-events: none;
   }
+  .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .stat-label {
-    font-size: 0.68rem;
-    color: var(--text2);
-    font-weight: 600;
-    margin-top: 2px;
-    letter-spacing: 0.04em;
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border); text-align: center;
+    padding: 16px; font-size: 0.72rem; color: var(--text-muted);
   }
+  footer a { color: var(--accent); text-decoration: none; }
 
-  /* DENSITY BAR */
-  .density-bar-wrap { display: flex; flex-direction: column; gap: 0.4rem; }
-  .density-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text2); font-weight: 600; }
-
-  .density-bar {
-    height: 8px;
-    background: var(--surface2);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .density-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent3), var(--accent));
-    border-radius: 4px;
-    transition: width 0.5s ease;
-    width: 0%;
-  }
-
-  /* LOADING */
-  .loading-dots {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-  }
-
-  .loading-dots span {
-    width: 5px; height: 5px;
-    background: currentColor;
-    border-radius: 50%;
-    animation: blink 1.2s infinite;
-  }
-
-  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes blink {
-    0%, 80%, 100% { opacity: 0.2; }
-    40% { opacity: 1; }
-  }
-
-  /* TABS (output mode) */
-  .out-tabs { display: flex; gap: 4px; }
-
-  .out-tab {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 5px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    background: var(--surface);
-    color: var(--text2);
-    letter-spacing: 0.06em;
-    transition: all 0.12s;
-  }
-
-  .out-tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-
-  .placeholder-msg {
-    color: var(--text2);
-    font-size: 0.85rem;
-    text-align: center;
-    padding: 2rem;
-    line-height: 1.7;
-  }
-
-  /* HIDDEN */
-  .hidden { display: none !important; }
-
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    main { grid-template-columns: 1fr; height: auto; }
-    .panel { border-right: none; border-bottom: 1.5px solid var(--border); }
+  @media (max-width: 780px) {
+    main { flex-direction: column; }
+    .panel-left { width: 100%; max-width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+    .info-grid { grid-template-columns: repeat(2,1fr); }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">FLOW<span>GEN</span></div>
-  <div class="mode-tabs">
-    <button class="mode-tab active" onclick="setMode('music')">🎵 MUSIC</button>
-    <button class="mode-tab" onclick="setMode('rap')">🎤 RAP FLOW</button>
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#"><span>FLOW</span>GEN</a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('music',this)">🎵 MUSIC</button>
+    <button class="nav-tab" onclick="switchTab('rap',this)">🎤 RAP FLOW</button>
   </div>
-</header>
+</nav>
 
 <main>
-  <!-- LEFT: INPUT -->
-  <div class="panel">
 
-    <!-- MUSIC MODE -->
-    <div id="music-input">
-      <div class="panel-label">프롬프트 입력</div>
+<!-- ═══════════════ MUSIC TAB ═══════════════ -->
+<div id="tab-music" class="tab-content active">
 
-      <div class="input-block">
-        <label>어떤 음악을 만들고 싶나요?</label>
-        <textarea id="music-prompt" placeholder="예: 비오는 날 듣기 좋은 Lo-fi, 공부할 때 집중되는 분위기&#10;예: Epic anime opening, dark and dramatic&#10;예: Chill trap beat, late night vibes"></textarea>
-      </div>
+  <!-- LEFT PANEL -->
+  <div class="panel-left">
 
-      <div class="input-block">
-        <label>장르</label>
-        <div class="chips" id="genre-chips">
-          <div class="chip active" onclick="toggleChip(this,'genre')">Lo-fi</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Trap</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Ambient</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Boom Bap</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Techno</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">House</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Drum & Bass</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Synthwave</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Drill</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Jazz</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">Cinematic</div>
-          <div class="chip" onclick="toggleChip(this,'genre')">EDM</div>
-        </div>
-      </div>
-
-      <div class="input-block">
-        <label>분위기</label>
-        <div class="chips" id="mood-chips">
-          <div class="chip" onclick="toggleChip(this,'mood')">Dark</div>
-          <div class="chip active" onclick="toggleChip(this,'mood')">Chill</div>
-          <div class="chip" onclick="toggleChip(this,'mood')">Epic</div>
-          <div class="chip" onclick="toggleChip(this,'mood')">Sad</div>
-          <div class="chip" onclick="toggleChip(this,'mood')">Aggressive</div>
-          <div class="chip" onclick="toggleChip(this,'mood')">Happy</div>
-        </div>
-      </div>
-
-      <div class="input-block">
-        <label>BPM</label>
-        <div class="bpm-row">
-          <div class="bpm-val" id="bpm-display">85</div>
-          <input type="range" id="bpm-slider" min="60" max="180" value="85"
-            oninput="document.getElementById('bpm-display').textContent=this.value">
-        </div>
-      </div>
-
-      <button class="btn-generate" id="music-gen-btn" onclick="generateMusic()">
-        ▶ STRUDEL 코드 생성
-      </button>
+    <div class="prompt-wrap">
+      <div class="section-label">프롬프트</div>
+      <textarea id="music-prompt" placeholder="예) 마누라한테 혼나서 억울한 느낌, 비오는 밤 감성, 보스전 BGM…&#10;자유롭게 써주세요. 길수록 정확해집니다."></textarea>
     </div>
 
-    <!-- RAP MODE -->
-    <div id="rap-input" class="hidden">
-      <div class="panel-label">랩 플로우 생성기</div>
-
-      <div class="input-block">
-        <label>가사 또는 문장 입력</label>
-        <textarea id="rap-lyrics" placeholder="예: I never thought I'd make it this far&#10;예: 내가 여기까지 온 건 기적이야&#10;예: 포기하고 싶었지만 끝까지 달렸어"></textarea>
+    <div>
+      <div class="section-label">장르</div>
+      <div class="chips" id="genre-chips">
+        <div class="chip active" data-group="genre">Trap</div>
+        <div class="chip" data-group="genre">Lo-fi</div>
+        <div class="chip" data-group="genre">Ambient</div>
+        <div class="chip" data-group="genre">Boom Bap</div>
+        <div class="chip" data-group="genre">Techno</div>
+        <div class="chip" data-group="genre">House</div>
+        <div class="chip" data-group="genre">Drum & Bass</div>
+        <div class="chip" data-group="genre">Synthwave</div>
+        <div class="chip" data-group="genre">Drill</div>
+        <div class="chip" data-group="genre">Jazz</div>
+        <div class="chip" data-group="genre">Cinematic</div>
+        <div class="chip" data-group="genre">EDM</div>
+        <div class="chip" data-group="genre">K-Pop</div>
+        <div class="chip" data-group="genre">Orchestral</div>
       </div>
-
-      <div class="input-block">
-        <label>플로우 스타일</label>
-        <div class="chips" id="flow-chips">
-          <div class="chip red active" onclick="toggleChip(this,'flow')">Trap</div>
-          <div class="chip red" onclick="toggleChip(this,'flow')">Boom Bap</div>
-          <div class="chip red" onclick="toggleChip(this,'flow')">Drill</div>
-          <div class="chip red" onclick="toggleChip(this,'flow')">Double Time</div>
-          <div class="chip red" onclick="toggleChip(this,'flow')">Triplet</div>
-          <div class="chip red" onclick="toggleChip(this,'flow')">Melodic</div>
-          <div class="chip red" onclick="toggleChip(this,'flow')">Old School</div>
-        </div>
-      </div>
-
-      <div class="input-block">
-        <label>BPM</label>
-        <div class="bpm-row">
-          <div class="bpm-val" id="rap-bpm-display">90</div>
-          <input type="range" id="rap-bpm-slider" min="60" max="160" value="90"
-            oninput="document.getElementById('rap-bpm-display').textContent=this.value">
-        </div>
-      </div>
-
-      <div class="input-block">
-        <label>난이도</label>
-        <div class="chips" id="diff-chips">
-          <div class="chip" onclick="toggleChip(this,'diff')">Easy</div>
-          <div class="chip active" onclick="toggleChip(this,'diff')">Medium</div>
-          <div class="chip" onclick="toggleChip(this,'diff')">Hard</div>
-          <div class="chip" onclick="toggleChip(this,'diff')">Insane</div>
-        </div>
-      </div>
-
-      <button class="btn-generate" id="rap-gen-btn" onclick="generateRap()" style="background:#E6452B;">
-        ▶ 플로우 생성
-      </button>
     </div>
 
-  </div>
-
-  <!-- RIGHT: OUTPUT -->
-  <div class="panel">
-
-    <!-- MUSIC OUTPUT -->
-    <div id="music-output" class="output-panel">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
-        <div class="panel-label">STRUDEL 코드</div>
-        <div class="out-tabs">
-          <button class="out-tab active" onclick="setOutTab('code',this)">CODE</button>
-          <button class="out-tab" onclick="setOutTab('info',this)">INFO</button>
-        </div>
+    <div>
+      <div class="section-label">분위기</div>
+      <div class="chips" id="mood-chips">
+        <div class="chip active-mood" data-group="mood">Chill</div>
+        <div class="chip" data-group="mood">Dark</div>
+        <div class="chip" data-group="mood">Epic</div>
+        <div class="chip" data-group="mood">Sad</div>
+        <div class="chip" data-group="mood">Aggressive</div>
+        <div class="chip" data-group="mood">Happy</div>
+        <div class="chip" data-group="mood">Romantic</div>
+        <div class="chip" data-group="mood">Tense</div>
+        <div class="chip" data-group="mood">Dreamy</div>
       </div>
+    </div>
 
-      <div id="out-code">
-        <div class="code-block">
-          <div class="code-header">
-            <div class="code-dots">
-              <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
-            </div>
-            <div class="code-lang">STRUDEL · JS</div>
-            <button class="btn-copy" onclick="copyCode()">COPY</button>
-          </div>
-          <div class="code-body" id="code-output">
-            <span class="code-placeholder">// 왼쪽에서 프롬프트를 입력하고
+    <div>
+      <div class="section-label">악기 (복수 선택)</div>
+      <div class="chips" id="instr-chips">
+        <div class="chip" data-group="instr">피아노</div>
+        <div class="chip" data-group="instr">바이올린</div>
+        <div class="chip" data-group="instr">첼로</div>
+        <div class="chip" data-group="instr">가야금</div>
+        <div class="chip" data-group="instr">해금</div>
+        <div class="chip" data-group="instr">기타</div>
+        <div class="chip" data-group="instr">베이스</div>
+        <div class="chip" data-group="instr">신스패드</div>
+        <div class="chip" data-group="instr">플룻</div>
+        <div class="chip" data-group="instr">트럼펫</div>
+        <div class="chip" data-group="instr">드럼</div>
+        <div class="chip" data-group="instr">808</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">복잡도</div>
+      <div class="complexity-row">
+        <button class="complexity-btn" data-val="simple" onclick="setComplexity(this)">Simple<br/><span style="font-size:.65rem;font-weight:400;color:inherit">5~8줄</span></button>
+        <button class="complexity-btn active" data-val="standard" onclick="setComplexity(this)">Standard<br/><span style="font-size:.65rem;font-weight:400;color:inherit">12~18줄</span></button>
+        <button class="complexity-btn" data-val="rich" onclick="setComplexity(this)">Rich<br/><span style="font-size:.65rem;font-weight:400;color:inherit">22~30줄</span></button>
+        <button class="complexity-btn" data-val="epic" onclick="setComplexity(this)">Epic<br/><span style="font-size:.65rem;font-weight:400;color:inherit">35줄+</span></button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">
+        BPM &nbsp;
+        <span style="font-family:var(--mono);font-size:.75rem;color:var(--text);" id="bpm-display">120</span>
+      </div>
+      <input type="range" id="bpm-slider" min="60" max="200" value="120"
+        oninput="document.getElementById('bpm-display').textContent=this.value"/>
+    </div>
+
+    <button class="btn-gen" id="btn-music-gen" onclick="generateMusic()">
+      <span id="gen-icon">▶</span>
+      <span id="gen-text">STRUDEL 코드 생성</span>
+      <div class="spinner" id="gen-spinner" style="display:none"></div>
+    </button>
+
+  </div><!-- /panel-left -->
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right">
+
+    <!-- code header -->
+    <div class="code-header">
+      <div class="code-title-row">
+        <span class="code-label">STRUDEL · JS</span>
+        <span class="line-count" id="line-count" style="display:none"></span>
+      </div>
+      <div class="code-actions">
+        <button class="btn-sm" id="btn-copy" onclick="copyCode()" style="display:none">COPY</button>
+        <button class="btn-sm primary" onclick="openStrudel()">↗ STRUDEL.CC 열기</button>
+      </div>
+    </div>
+
+    <!-- code box -->
+    <div class="code-box" id="code-box">
+      <pre class="code-placeholder">// 왼쪽에서 프롬프트를 입력하고
 // STRUDEL 코드 생성 버튼을 누르세요.
 //
-// 생성된 코드를 strudel.cc에 붙여넣으면
-// 바로 재생됩니다.</span>
-          </div>
-        </div>
+// 장르 · 분위기 · 악기를 조합하면
+// 더 정확한 음악이 만들어집니다.
+//
+// 생성된 코드는 strudel.cc에
+// 붙여넣으면 바로 재생됩니다.</pre>
+    </div>
 
-        <div style="display:flex;gap:8px;" id="action-btns" style="display:none;">
-          <button class="btn-strudel" id="strudel-btn" onclick="openStrudelWithCode()" style="display:none;flex:1;">
-            ↗ STRUDEL.CC 열기
-          </button>
-          <button class="btn-strudel" id="copy-play-btn" onclick="copyAndPlay()" style="display:none;flex:1;border-color:var(--accent2);color:var(--accent2);">
-            ▶ 코드 복사 후 재생
-          </button>
-        </div>
-        <!-- strudel.cc는 iframe CORS 정책으로 제어 불가 → 새탭으로 열기 -->
+    <!-- info grid -->
+    <div class="info-grid" id="info-grid" style="display:none">
+      <div class="info-card">
+        <div class="info-card-label">장르</div>
+        <div class="info-card-val" id="info-genre">—</div>
       </div>
-
-      <div id="out-info" class="hidden">
-        <div class="placeholder-msg" id="info-content">코드를 먼저 생성하면<br>음악 정보가 여기 표시됩니다.</div>
+      <div class="info-card">
+        <div class="info-card-label">분위기</div>
+        <div class="info-card-val" id="info-mood">—</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">BPM</div>
+        <div class="info-card-val" id="info-bpm">—</div>
+      </div>
+      <div class="info-card" style="grid-column:span 3">
+        <div class="info-card-label">악기 레이어</div>
+        <div class="info-card-val" id="info-instrs" style="font-size:.85rem">—</div>
       </div>
     </div>
 
-    <!-- RAP OUTPUT -->
-    <div id="rap-output" class="output-panel hidden">
-      <div class="panel-label">플로우 분석</div>
-
-      <div class="stats-row" id="rap-stats">
-        <div class="stat-card"><div class="stat-val" id="stat-syl">—</div><div class="stat-label">음절 수</div></div>
-        <div class="stat-card"><div class="stat-val" id="stat-score">—</div><div class="stat-label">플로우 점수</div></div>
-        <div class="stat-card"><div class="stat-val" id="stat-diff">—</div><div class="stat-label">난이도</div></div>
+    <!-- embed note -->
+    <div class="embed-wrap" id="embed-tip" style="display:none">
+      <div class="embed-header">
+        <span class="embed-label">💡 재생 방법</span>
       </div>
-
-      <div class="density-bar-wrap">
-        <div class="density-label-row"><span>음절 밀도</span><span id="density-txt">—</span></div>
-        <div class="density-bar"><div class="density-fill" id="density-fill"></div></div>
+      <div style="padding:14px 16px;font-size:.82rem;color:var(--text-muted);line-height:1.6">
+        1. 위 <strong>COPY</strong> 버튼으로 코드 복사<br/>
+        2. <a href="https://strudel.cc" target="_blank" style="color:var(--accent)">strudel.cc</a> 접속 → 붙여넣기 → ▶ 재생<br/>
+        3. 화면 녹화하면 바로 릴스 소재!
       </div>
+    </div>
 
-      <div class="flow-display" id="flow-display">
-        <div class="placeholder-msg">가사를 입력하고 플로우 생성 버튼을 누르세요.<br><br>킥·스네어 위치와 강세를 시각화해드립니다.</div>
+  </div><!-- /panel-right -->
+
+</div><!-- /tab-music -->
+
+
+<!-- ═══════════════ RAP FLOW TAB ═══════════════ -->
+<div id="tab-rap" class="tab-content">
+
+  <!-- LEFT PANEL -->
+  <div class="panel-left">
+    <div class="prompt-wrap">
+      <div class="section-label">가사 입력</div>
+      <textarea id="rap-lyrics" placeholder="가사나 문장을 입력하세요.&#10;한국어 / 영어 모두 가능합니다." style="min-height:120px"></textarea>
+    </div>
+
+    <div>
+      <div class="section-label">플로우 스타일</div>
+      <div class="chips" id="flow-chips">
+        <div class="chip active" data-group="flow">Trap</div>
+        <div class="chip" data-group="flow">Boom Bap</div>
+        <div class="chip" data-group="flow">Drill</div>
+        <div class="chip" data-group="flow">Double Time</div>
+        <div class="chip" data-group="flow">Triplet</div>
+        <div class="chip" data-group="flow">Melodic</div>
+        <div class="chip" data-group="flow">Old School</div>
       </div>
+    </div>
+
+    <div>
+      <div class="section-label">
+        BPM &nbsp;
+        <span style="font-family:var(--mono);font-size:.75rem;color:var(--text);" id="rap-bpm-display">90</span>
+      </div>
+      <input type="range" id="rap-bpm-slider" min="60" max="180" value="90"
+        oninput="document.getElementById('rap-bpm-display').textContent=this.value"/>
+    </div>
+
+    <div>
+      <div class="section-label">난이도</div>
+      <div class="complexity-row">
+        <button class="complexity-btn" data-val="easy" onclick="setFlowDiff(this)">Easy</button>
+        <button class="complexity-btn active" data-val="medium" onclick="setFlowDiff(this)">Medium</button>
+        <button class="complexity-btn" data-val="hard" onclick="setFlowDiff(this)">Hard</button>
+        <button class="complexity-btn" data-val="insane" onclick="setFlowDiff(this)">Insane</button>
+      </div>
+    </div>
+
+    <button class="btn-gen" id="btn-rap-gen" onclick="generateRap()">
+      <span id="rap-gen-icon">▶</span>
+      <span id="rap-gen-text">플로우 생성</span>
+      <div class="spinner" id="rap-gen-spinner" style="display:none"></div>
+    </button>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right">
+    <div class="code-header">
+      <span class="code-label">플로우 분석</span>
+    </div>
+
+    <div class="stat-row" id="rap-stats" style="display:none">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-syllables">—</div>
+        <div class="stat-lbl">음절 수</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-score">—</div>
+        <div class="stat-lbl">플로우 점수</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-density">—</div>
+        <div class="stat-lbl">밀도(음절/박)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-diff">—</div>
+        <div class="stat-lbl">난이도</div>
+      </div>
+    </div>
+
+    <div class="flow-visual" id="flow-visual">
+      <span style="color:#B8B4AC;font-family:var(--mono);font-size:.8rem">
+가사를 입력하고 플로우 생성 버튼을 누르세요.
+킥·스네어 위치와 강세를 시각화해드립니다.</span>
+    </div>
+
+    <div class="code-box" id="rap-analysis-box" style="display:none;min-height:180px">
+      <pre id="rap-analysis-pre" style="font-family:var(--mono);font-size:.8rem;color:#E8E6DF;line-height:1.7;white-space:pre-wrap"></pre>
     </div>
 
   </div>
+
+</div><!-- /tab-rap -->
+
 </main>
 
+<footer>
+  FLOWGEN — AI Music Studio · Powered by Claude &nbsp;·&nbsp;
+  <a href="https://strudel.cc" target="_blank">strudel.cc</a> &nbsp;·&nbsp; Free & Open
+</footer>
+
+<div class="toast" id="toast"></div>
+
 <script>
-// ─── STATE ───────────────────────────────────────────
-let currentMode = 'music';
-let generatedCode = '';
-let selectedGenre = 'Lo-fi';
-let selectedMood = 'Chill';
-let selectedFlow = 'Trap';
-let selectedDiff = 'Medium';
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+const state = {
+  genre: 'Trap', mood: 'Chill',
+  instrs: [],
+  complexity: 'standard',
+  flowStyle: 'Trap', flowDiff: 'medium',
+  code: ''
+};
 
-// ─── MODE SWITCH ──────────────────────────────────────
-function setMode(mode) {
-  currentMode = mode;
-  document.querySelectorAll('.mode-tab').forEach((t,i) => {
-    t.classList.toggle('active', (mode==='music' && i===0)||(mode==='rap' && i===1));
-  });
-  document.getElementById('music-input').classList.toggle('hidden', mode!=='music');
-  document.getElementById('rap-input').classList.toggle('hidden', mode!=='rap');
-  document.getElementById('music-output').classList.toggle('hidden', mode!=='music');
-  document.getElementById('rap-output').classList.toggle('hidden', mode!=='rap');
-}
-
-// ─── CHIP SELECT ──────────────────────────────────────
-function toggleChip(el, group) {
-  const groupMap = { genre: 'genre-chips', mood: 'mood-chips', flow: 'flow-chips', diff: 'diff-chips' };
-  document.querySelectorAll('#'+groupMap[group]+' .chip').forEach(c => c.classList.remove('active'));
+/* ════════════════════════════════════════
+   TAB SWITCH
+════════════════════════════════════════ */
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
   el.classList.add('active');
-  if(group==='genre') selectedGenre = el.textContent;
-  if(group==='mood') selectedMood = el.textContent;
-  if(group==='flow') selectedFlow = el.textContent;
-  if(group==='diff') selectedDiff = el.textContent;
 }
 
-// ─── OUTPUT TAB ───────────────────────────────────────
-function setOutTab(tab, el) {
-  document.querySelectorAll('.out-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('out-code').classList.toggle('hidden', tab!=='code');
-  document.getElementById('out-info').classList.toggle('hidden', tab!=='info');
-}
-
-// ─── COPY ─────────────────────────────────────────────
-function copyCode() {
-  if(!generatedCode) return;
-  navigator.clipboard.writeText(generatedCode).then(() => {
-    const btn = document.querySelector('.btn-copy');
-    btn.textContent = 'COPIED!';
-    setTimeout(() => btn.textContent = 'COPY', 1500);
+/* ════════════════════════════════════════
+   CHIPS
+════════════════════════════════════════ */
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const g = chip.dataset.group;
+    if (g === 'instr') {
+      chip.classList.toggle('active-instr');
+      const t = chip.textContent.trim();
+      const idx = state.instrs.indexOf(t);
+      idx === -1 ? state.instrs.push(t) : state.instrs.splice(idx, 1);
+      return;
+    }
+    const cls = g === 'genre' ? 'active' : g === 'mood' ? 'active-mood' : 'active';
+    document.querySelectorAll(`[data-group="${g}"]`).forEach(c => c.classList.remove(cls));
+    chip.classList.add(cls);
+    if (g === 'genre') state.genre = chip.textContent.trim();
+    if (g === 'mood')  state.mood  = chip.textContent.trim();
+    if (g === 'flow')  state.flowStyle = chip.textContent.trim();
   });
+});
+
+function setComplexity(el) {
+  document.querySelectorAll('.complexity-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.complexity = el.dataset.val;
+}
+function setFlowDiff(el) {
+  el.closest('.complexity-row').querySelectorAll('.complexity-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.flowDiff = el.dataset.val;
 }
 
-// ─── OPEN STRUDEL WITH CODE ───────────────────────────
-function openStrudelWithCode() {
-  try {
-    const bytes = new TextEncoder().encode(generatedCode);
-    const binStr = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
-    const encoded = btoa(binStr);
-    window.open('https://strudel.cc/#' + encoded, '_blank');
-  } catch(e) {
-    window.open('https://strudel.cc/', '_blank');
-  }
+/* ════════════════════════════════════════
+   CLAUDE API CALL
+════════════════════════════════════════ */
+async function callClaude(systemPrompt, userMsg) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMsg }]
+    })
+  });
+  if (!res.ok) throw new Error('API error');
+  const data = await res.json();
+  return data.content.map(b => b.text || '').join('');
 }
 
-function copyAndPlay() {
-  if(!generatedCode) return;
-  const doOpen = () => window.open('https://strudel.cc/', '_blank');
-  const btn = document.getElementById('copy-play-btn');
-  try {
-    navigator.clipboard.writeText(generatedCode).then(() => {
-      btn.textContent = '✓ 복사완료! strudel.cc 열기';
-      doOpen();
-      setTimeout(() => { btn.textContent = '▶ 코드 복사 후 재생'; }, 2500);
-    });
-  } catch(e) {
-    const ta = document.createElement('textarea');
-    ta.value = generatedCode;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    doOpen();
-  }
+/* ════════════════════════════════════════
+   MUSIC SYSTEM PROMPT
+════════════════════════════════════════ */
+function buildMusicSystemPrompt(complexity) {
+  const lineGuide = {
+    simple: '5~8줄',
+    standard: '12~18줄',
+    rich: '22~30줄',
+    epic: '35줄 이상'
+  }[complexity];
+
+  return `You are an expert Strudel live-coding musician and music producer. Generate ONLY valid Strudel.cc JavaScript code — no explanations, no markdown, no backticks.
+
+Rules:
+- Total lines: ${lineGuide}. More lines = richer sound.
+- Always start with setcps(BPM/60/4)
+- Use stack() to layer multiple patterns
+- Mandatory layers: drums (kick+snare+hihat), bass, melody, at least one instrument from user selection
+- For instruments: piano→s("piano"), violin/cello→note().s("supersaw").room(0.9).cutoff(2000), gayageum/haegeum→note().s("zither").room(0.9).delay(0.3), flute→note().s("flute"), trumpet→note().s("supermandolin").cutoff(3000), guitar→note().s("guitar"), synth pad→note().s("pad"), bass→note().s("sawtooth").cutoff(500)
+- Use .gain(), .room(), .delay(), .cutoff(), .shape(), .vowel() for expression
+- Use note() for melody with real notes (c3,d3,e3 etc.) matching mood
+- Sad mood: minor scale (c3 eb3 g3 bb3). Happy: major. Dark: phrygian. Epic: dramatic intervals
+- Use .slow() .fast() .every() .sometimes() for variation
+- Add automation: .gain(sine.range(0.2,0.8)) for dynamics
+- Comment each layer with // drum, // bass, // melody, etc.
+- Output ONLY the code, starting with setcps(`;
 }
 
-// ─── MUSIC GENERATE ───────────────────────────────────
+/* ════════════════════════════════════════
+   FALLBACK MUSIC CODE
+════════════════════════════════════════ */
+function fallbackMusic(genre, mood, bpm, instrs, complexity) {
+  const cps = (bpm/60/4).toFixed(3);
+  const minor = mood === 'Sad' || mood === 'Dark';
+  const notes = minor ? '"c3 eb3 g3 bb3"' : '"c3 e3 g3 b3"';
+  const melNotes = minor ? '"<c4 eb4 g4 bb4>/2"' : '"<c4 e4 g4 b4>/2"';
+  const hh = genre === 'Drill' ? '"hh*8"' : genre === 'Trap' ? '"hh*16"' : '"hh*4"';
+  const instrLine = instrs.includes('바이올린') || instrs.includes('첼로')
+    ? `  note("${minor?'<c4 eb4 bb3>':'<c4 e4 b3>'}").s("supersaw").room(0.9).cutoff(1800).gain(0.4), // violin/cello`
+    : instrs.includes('피아노')
+    ? `  note("${minor?'<c4 eb4 g4 bb4>':'<c4 e4 g4 b4>'}").s("piano").room(0.6).gain(0.5), // piano`
+    : instrs.includes('가야금') || instrs.includes('해금')
+    ? `  note("<c4 d4 f4 g4>/2").s("zither").room(0.95).delay(0.4).gain(0.5), // gayageum`
+    : `  note(${melNotes}).s("pad").room(0.8).gain(0.35), // synth pad`;
+
+  const richLayers = complexity === 'rich' || complexity === 'epic' ? `
+  // atmosphere
+  note("<c2 g2 bb2>/4").s("supersaw").cutoff(300).room(0.95).gain(0.25),
+  // perc
+  s("cp").every(4,x=>x.speed(0.7)).gain(0.5),` : '';
+
+  return `setcps(${cps})
+stack(
+  // drums
+  s("bd ~ ~ bd ~ ~ bd ~").gain(0.9),
+  s("~ sd ~ ~ ~ sd ~ ~").gain(0.75),
+  s(${hh}).gain(sine.range(0.2,0.5)),
+  // bass
+  note(${notes}).s("sawtooth").cutoff(400).gain(0.7).slow(2),
+  // melody
+${instrLine}${richLayers}
+)`;
+}
+
+/* ════════════════════════════════════════
+   GENERATE MUSIC
+════════════════════════════════════════ */
 async function generateMusic() {
   const prompt = document.getElementById('music-prompt').value.trim();
   const bpm = document.getElementById('bpm-slider').value;
-  const btn = document.getElementById('music-gen-btn');
+  const complexity = state.complexity;
+  const instrList = state.instrs.length ? state.instrs.join(', ') : '기본 신스';
 
-  if(!prompt && selectedGenre==='Lo-fi') {
-    // use genre/mood as fallback
-  }
+  setMusicLoading(true);
 
-  btn.disabled = true;
-  btn.innerHTML = '생성 중 <span class="loading-dots"><span></span><span></span><span></span></span>';
-
-  const codeEl = document.getElementById('code-output');
-  codeEl.innerHTML = '<span class="code-placeholder">AI가 코드를 작성하는 중...</span>';
-
-  const systemPrompt = `You are an expert Strudel live-coding assistant. Generate a working Strudel pattern.
-
-STRICT RULES:
-- Return ONLY raw Strudel JS code. No markdown, no backticks, no explanation.
-- NO comments at all (no // lines). Comments cause encoding errors.
-- Use ONLY these safe sounds: bd, sd, hh, cp, oh, rim, sawtooth, sine, square, triangle, piano
-- Use setcps(${bpm}/60/4) for tempo
-- Always use stack() to combine layers
-- Valid method chains only: .gain() .room() .delay() .cutoff() .pan() .fast() .slow() .note() .s() .speed() .decay() .sustain()
-- Use sine.range() and perlin.range() for modulation
-- Minimum 3 layers: drums + bass + melody
-- Genre: ${selectedGenre}, Mood: ${selectedMood}
-
-EXAMPLE of valid output:
-setcps(90/60/4)
-stack(
-  s("bd ~ sd ~").gain(0.8),
-  s("hh*8").gain(0.3),
-  note("<c2 eb2 f2 g2>").s("sawtooth").cutoff(400).gain(0.5)
-)`;
-
-  const userMsg = prompt
-    ? `Create a Strudel pattern: ${prompt}. Genre: ${selectedGenre}, Mood: ${selectedMood}, BPM: ${bpm}`
-    : `Create a ${selectedMood} ${selectedGenre} Strudel pattern at ${bpm} BPM with multiple layers.`;
-
+  let code = '';
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMsg }]
-      })
-    });
-
-    const data = await res.json();
-    const raw = data.content?.map(c => c.text||'').join('') || '';
-    generatedCode = raw.replace(/```[\w]*\n?/g, '').trim();
-
-    codeEl.textContent = generatedCode;
-    document.getElementById('strudel-btn').style.display = 'flex';
-    document.getElementById('copy-play-btn').style.display = 'flex';
-
-    // Update info tab
-    document.getElementById('info-content').innerHTML = `
-      <div style="text-align:left; line-height:2;">
-        <div style="font-family:var(--mono); font-size:0.8rem; color:var(--text2); margin-bottom:1rem;">생성된 음악 정보</div>
-        <div><strong>장르</strong>: ${selectedGenre}</div>
-        <div><strong>분위기</strong>: ${selectedMood}</div>
-        <div><strong>BPM</strong>: ${bpm}</div>
-        <div><strong>프롬프트</strong>: ${prompt || '(장르/분위기 기반 자동생성)'}</div>
-        <div style="margin-top:1rem; font-size:0.8rem; color:var(--text2);">strudel.cc에 코드를 붙여넣고 ▶ 버튼을 눌러 재생하세요.</div>
-      </div>`;
-
+    const sys = buildMusicSystemPrompt(complexity);
+    const user = `장르: ${state.genre} | 분위기: ${state.mood} | BPM: ${bpm} | 악기: ${instrList} | 복잡도: ${complexity}
+프롬프트: "${prompt || '자유롭게 생성'}"
+위 조건에 맞는 Strudel 코드를 생성하세요.`;
+    code = await callClaude(sys, user);
+    // clean up
+    code = code.replace(/```[\w]*/g,'').replace(/```/g,'').trim();
   } catch(e) {
-    codeEl.innerHTML = `<span class="code-placeholder">// 오류: API 연결에 실패했습니다.\n// 네트워크 상태를 확인하세요.\n// 오프라인 모드: 예시 코드를 사용합니다.</span>`;
-    // Fallback demo code
-    generatedCode = generateFallbackCode(selectedGenre, selectedMood, bpm);
-    codeEl.textContent = generatedCode;
-    document.getElementById('strudel-btn').style.display = 'flex';
-    document.getElementById('copy-play-btn').style.display = 'flex';
+    code = fallbackMusic(state.genre, state.mood, bpm, state.instrs, complexity);
   }
 
-  btn.disabled = false;
-  btn.innerHTML = '▶ STRUDEL 코드 생성';
+  state.code = code;
+  renderCode(code);
+  updateInfoCards(bpm, instrList);
+  setMusicLoading(false);
 }
 
-// ─── FALLBACK CODE ────────────────────────────────────
-function generateFallbackCode(genre, mood, bpm) {
-  const templates = {
-    'Lo-fi': `// Lo-fi ${mood} — ${bpm} BPM
-// 드럼 레이어
-setcps(${bpm}/60/4)
-stack(
-  s("bd ~ sd ~").gain(0.8),
-  s("hh*8").gain(0.3).pan(sine.range(0.3,0.7)),
-  note("<c2 eb2 f2 g2>").s("sawtooth").cutoff(400).gain(0.5),
-  note("<c4 eb4 g4 bb4>/2").s("piano").gain(0.4).room(0.6).slow(2)
-)`,
-    'Trap': `setcps(${bpm}/60/4)
-stack(
-  s("bd ~ ~ ~ bd ~ ~ ~").gain(0.9),
-  s("~ ~ sd ~ ~ ~ sd ~").gain(0.7),
-  s("hh*16").gain(sine.range(0.1,0.5)),
-  note("c1 ~ c1 ~ eb1 ~ f1 ~").s("sawtooth").cutoff(200).gain(0.7),
-  note("<c4 g3 eb4 bb3>/4").s("sine").gain(0.3).room(0.8).delay(0.3)
-)`,
-    'Ambient': `setcps(${bpm}/60/4)
-stack(
-  note("<c3 g3 eb3 bb3>/8").s("sine").gain(0.4).room(0.9).delay(0.6).slow(4),
-  note("c4 eb4 g4 bb4 c5").s("sawtooth").cutoff(sine.slow(8).range(200,800)).gain(0.2).room(1).slow(8)
-)`
-  };
-  templates['Techno'] = `setcps(${bpm}/60/4)
-stack(
-  s("bd*4").gain(0.95),
-  s("~ ~ sd ~").gain(0.8),
-  s("hh*16").gain(sine.range(0.2,0.6)),
-  s("~ cp ~ cp").gain(0.5),
-  note("c1*8").s("sawtooth").cutoff(sine.slow(4).range(100,800)).gain(0.6)
-)`;
-  templates['House'] = `setcps(${bpm}/60/4)
-stack(
-  s("bd ~ bd ~").gain(0.9),
-  s("~ sd ~ sd").gain(0.75),
-  s("hh*8").gain(0.4).pan(sine.range(0.2,0.8)),
-  note("<c3 f3 g3 bb3>/2").s("sawtooth").cutoff(1200).gain(0.5).room(0.4),
-  note("c4 e4 g4 bb4").s("piano").gain(0.35).slow(2)
-)`;
-  templates['Drum & Bass'] = `setcps(${bpm}/60/4)
-stack(
-  s("bd ~ ~ bd ~ ~ bd ~").fast(2).gain(0.9),
-  s("~ sd").fast(2).gain(0.8),
-  s("hh*16").gain(sine.range(0.1,0.5)).fast(2),
-  note("<c1 c1 eb1 f1>").s("sawtooth").cutoff(300).gain(0.7).fast(2)
-)`;
-  templates['Synthwave'] = `setcps(${bpm}/60/4)
-stack(
-  s("bd ~ sd ~ bd ~ sd ~").gain(0.8),
-  s("hh*8").gain(0.3),
-  note("<c3 g3 eb3 bb3>/4").s("sawtooth").cutoff(800).gain(0.5).room(0.7).delay(0.4),
-  note("c4 eb4 g4 bb4 c5 bb4 g4 eb4").s("sine").gain(0.4).slow(2).room(0.5)
-)`;
-  templates['EDM'] = `setcps(${bpm}/60/4)
-stack(
-  s("bd*4").gain(0.95),
-  s("~ sd ~ sd").gain(0.8),
-  s("hh*8").gain(0.45),
-  note("<c3 g3 f3 eb3>/2").s("sawtooth").cutoff(sine.slow(2).range(400,3000)).gain(0.6),
-  note("c5 g4 eb5 bb4").s("sine").gain(0.35).room(0.8).delay(0.5).slow(2)
-)`;
-  return templates[genre] || templates['Lo-fi'];
+function renderCode(code) {
+  const box = document.getElementById('code-box');
+  // simple syntax highlight
+  const hl = code
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(\/\/[^\n]*)/g,'<span class="tok-cmt">$1</span>')
+    .replace(/\b(setcps|stack|note|s|gain|room|delay|cutoff|shape|vowel|slow|fast|every|sometimes|sine|range|speed)\b(?=\()/g,'<span class="tok-fn">$1</span>')
+    .replace(/"([^"]*)"/g,'<span class="tok-str">"$1"</span>')
+    .replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-num">$1</span>');
+
+  box.innerHTML = `<pre>${hl}</pre>`;
+  const lines = code.split('\n').length;
+  const lc = document.getElementById('line-count');
+  lc.textContent = `${lines} lines`; lc.style.display='inline';
+  document.getElementById('btn-copy').style.display='inline';
+  document.getElementById('info-grid').style.display='grid';
+  document.getElementById('embed-tip').style.display='block';
 }
 
-// ─── RAP GENERATE ─────────────────────────────────────
-async function generateRap() {
-  const lyrics = document.getElementById('rap-lyrics').value.trim();
-  if(!lyrics) { alert('가사를 입력해주세요.'); return; }
+function updateInfoCards(bpm, instrList) {
+  document.getElementById('info-genre').textContent = state.genre;
+  document.getElementById('info-mood').textContent  = state.mood;
+  document.getElementById('info-bpm').textContent   = bpm;
+  document.getElementById('info-instrs').textContent = instrList;
+}
 
-  const bpm = document.getElementById('rap-bpm-slider').value;
-  const btn = document.getElementById('rap-gen-btn');
+function setMusicLoading(on) {
+  document.getElementById('btn-music-gen').disabled = on;
+  document.getElementById('gen-icon').style.display = on ? 'none' : 'inline';
+  document.getElementById('gen-text').textContent = on ? '생성 중...' : 'STRUDEL 코드 생성';
+  document.getElementById('gen-spinner').style.display = on ? 'block' : 'none';
+}
 
-  btn.disabled = true;
-  btn.innerHTML = '분석 중 <span class="loading-dots"><span></span><span></span><span></span></span>';
-
-  const flowDisplay = document.getElementById('flow-display');
-  flowDisplay.innerHTML = '<div class="placeholder-msg">플로우 분석 중...</div>';
-
-  const systemPrompt = `You are a professional rap flow analyst and producer.
-Analyze the given lyrics and return a JSON object with this exact structure:
+/* ════════════════════════════════════════
+   RAP FLOW
+════════════════════════════════════════ */
+const RAP_SYS = `You are a professional rap flow analyst and hip-hop producer. Analyze rap lyrics and return ONLY a JSON object with this exact shape (no markdown, no extra text):
 {
   "syllables": <number>,
-  "flowScore": <number 0-100>,
+  "score": <1-100>,
+  "density": <float, syllables per beat>,
   "difficulty": "<Easy|Medium|Hard|Insane>",
-  "density": <number 0-100>,
-  "lines": [
-    {
-      "beat": "<beat position like '1.1' '1.2' '2.1'>",
-      "words": ["word1", "word2"],
-      "kick": [0, 1],
-      "snare": [1],
-      "stressed": [1],
-      "breathAfter": <boolean>
-    }
-  ]
-}
-Flow style: ${selectedFlow}, BPM: ${bpm}, Difficulty: ${selectedDiff}.
-Return ONLY valid JSON, no markdown, no extra text.`;
+  "visual": "<HTML string using <span class='beat-strong'> for heavy beats, beat-mid for medium, beat-weak for light, beat-bar for bar lines>",
+  "analysis": "<2~4 line technical breakdown: flow pattern, rhyme scheme, stress pattern, suggestion>"
+}`;
 
+async function generateRap() {
+  const lyrics = document.getElementById('rap-lyrics').value.trim();
+  if (!lyrics) { showToast('가사를 입력하세요!'); return; }
+  const bpm = document.getElementById('rap-bpm-slider').value;
+  setRapLoading(true);
+
+  let result;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: `Lyrics: "${lyrics}"\nFlow: ${selectedFlow}, BPM: ${bpm}` }]
-      })
-    });
-
-    const data = await res.json();
-    const raw = data.content?.map(c => c.text||'').join('') || '';
-    const clean = raw.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(clean);
-    renderFlow(parsed);
-
+    const raw = await callClaude(RAP_SYS,
+      `Style: ${state.flowStyle} | BPM: ${bpm} | Difficulty: ${state.flowDiff}\nLyrics: "${lyrics}"`);
+    const clean = raw.replace(/```[\w]*/g,'').replace(/```/g,'').trim();
+    result = JSON.parse(clean);
   } catch(e) {
-    // Fallback: local analysis
-    const fallback = analyzeLocally(lyrics, bpm);
-    renderFlow(fallback);
+    // fallback
+    const syl = Math.round(lyrics.replace(/\s+/g,' ').split('').filter(c=>/[가-힣a-z]/i.test(c)).length * 0.7);
+    result = {
+      syllables: syl, score: 72, density: (syl/8).toFixed(1),
+      difficulty: state.flowDiff.charAt(0).toUpperCase()+state.flowDiff.slice(1),
+      visual: lyrics.split(' ').map((w,i)=>
+        `<span class="${i%4===0?'beat-strong':i%2===0?'beat-mid':'beat-weak'}">${w}</span>${i%8===7?'<span class="beat-bar"></span>':' '}`
+      ).join(''),
+      analysis: `[${state.flowStyle}] BPM ${bpm} 기준 분석\n음절 밀도: ${(syl/8).toFixed(1)} 음절/박\n강세 패턴: 1·3박 강조\n전체적으로 안정적인 플로우입니다.`
+    };
   }
 
-  btn.disabled = false;
-  btn.innerHTML = '▶ 플로우 생성';
+  document.getElementById('rap-stats').style.display='flex';
+  document.getElementById('stat-syllables').textContent = result.syllables;
+  document.getElementById('stat-score').textContent     = result.score;
+  document.getElementById('stat-density').textContent   = result.density;
+  document.getElementById('stat-diff').textContent      = result.difficulty;
+  document.getElementById('flow-visual').innerHTML      = result.visual;
+  const rapBox = document.getElementById('rap-analysis-box');
+  rapBox.style.display = 'block';
+  document.getElementById('rap-analysis-pre').textContent = result.analysis;
+  setRapLoading(false);
 }
 
-// ─── LOCAL FLOW ANALYSIS ──────────────────────────────
-function analyzeLocally(lyrics, bpm) {
-  const words = lyrics.split(/\s+/);
-  const syllables = words.reduce((acc, w) => acc + Math.max(1, Math.ceil(w.length/2.5)), 0);
-  const density = Math.min(100, Math.round((syllables / (bpm/60 * 4)) * 10));
-  const score = Math.min(100, 60 + Math.floor(Math.random()*30));
-
-  // Split into lines of 4 words
-  const lines = [];
-  for(let i=0; i<words.length; i+=4) {
-    const chunk = words.slice(i, i+4);
-    lines.push({
-      beat: `${Math.floor(i/4)+1}.1`,
-      words: chunk,
-      kick: chunk.map((_,j) => j===0 ? 1 : 0),
-      snare: chunk.map((_,j) => j===2 ? 1 : 0),
-      stressed: chunk.map((_,j) => j%2===1 ? 1 : 0),
-      breathAfter: (i+4) % 8 === 0
-    });
-  }
-
-  const diffMap = { Easy:55, Medium:70, Hard:85, Insane:95 };
-  return { syllables, flowScore: score, difficulty: selectedDiff, density, lines };
+function setRapLoading(on) {
+  document.getElementById('btn-rap-gen').disabled = on;
+  document.getElementById('rap-gen-icon').style.display = on ? 'none' : 'inline';
+  document.getElementById('rap-gen-text').textContent = on ? '분석 중...' : '플로우 생성';
+  document.getElementById('rap-gen-spinner').style.display = on ? 'block' : 'none';
 }
 
-// ─── RENDER FLOW ──────────────────────────────────────
-function renderFlow(data) {
-  document.getElementById('stat-syl').textContent = data.syllables;
-  document.getElementById('stat-score').textContent = data.flowScore;
-  document.getElementById('stat-diff').textContent = data.difficulty;
-  document.getElementById('density-fill').style.width = data.density + '%';
-  document.getElementById('density-txt').textContent = data.density + '% — ' + (data.density > 75 ? 'Too Dense' : data.density > 45 ? 'Good' : 'Sparse');
+/* ════════════════════════════════════════
+   UTILS
+════════════════════════════════════════ */
+function copyCode() {
+  if (!state.code) return;
+  navigator.clipboard.writeText(state.code).then(() => showToast('코드 복사 완료! strudel.cc에 붙여넣으세요'));
+}
 
-  const display = document.getElementById('flow-display');
-  display.innerHTML = '';
+function openStrudel() {
+  window.open('https://strudel.cc', '_blank');
+}
 
-  (data.lines || []).forEach(line => {
-    const row = document.createElement('div');
-    row.className = 'flow-line';
-
-    const beatEl = document.createElement('span');
-    beatEl.className = 'flow-beat';
-    beatEl.textContent = line.beat;
-    row.appendChild(beatEl);
-
-    (line.words || []).forEach((word, i) => {
-      const el = document.createElement('span');
-      el.className = 'flow-word';
-      if(line.kick && line.kick[i]) el.classList.add('KICK');
-      else if(line.snare && line.snare[i]) el.classList.add('SNARE');
-      else if(line.stressed && line.stressed[i]) el.classList.add('stressed');
-      el.textContent = word.toUpperCase();
-      row.appendChild(el);
-    });
-
-    if(line.breathAfter) {
-      const br = document.createElement('span');
-      br.className = 'flow-breath';
-      br.textContent = ' /';
-      row.appendChild(br);
-    }
-
-    display.appendChild(row);
-  });
+function showToast(msg, dur=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
 }
 </script>
 
-<footer style="border-top:1.5px solid var(--border);padding:16px 2rem;display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-family:var(--mono);font-size:0.7rem;color:var(--text2);letter-spacing:0.06em">
-  <span>FLOW<span style="color:var(--accent)">GEN</span> — AI Music Studio</span>
-  <span>Powered by Claude · <a href="https://strudel.cc" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">strudel.cc</a> · Free &amp; Open</span>
-</footer>
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"FLOWGEN",
+  "description":"AI-powered music code generator and rap flow analyzer",
+  "url":"https://musicplatform-dsa.pages.dev",
+  "applicationCategory":"MusicApplication",
+  "operatingSystem":"Web",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+}
+</script>
 </body>
 </html>
