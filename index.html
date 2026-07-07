@@ -4,10 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="color-scheme" content="light only"/>
-<title>FLOWGEN — AI DJ & Music Studio</title>
-<meta name="description" content="AI로 음악을 만드세요. 장르·분위기·악기 선택 → Strudel 라이브코딩 패턴 즉시 생성. 무료."/>
-<meta property="og:title" content="FLOWGEN — AI DJ & Music Studio"/>
-<meta property="og:description" content="AI로 음악을 만드세요. 장르·분위기·악기 선택 → Strudel 라이브코딩 패턴 즉시 생성."/>
+<title>MYOWNBEAT — AI DJ & Music Studio</title>
+<meta name="description" content="Generate music with AI. Pick genre, mood & instruments → get Strudel live-coding patterns instantly. Free."/>
+<meta property="og:title" content="MYOWNBEAT — AI DJ & Music Studio"/>
+<meta property="og:description" content="Generate music with AI. Pick genre, mood & instruments → get Strudel live-coding patterns instantly."/>
 <meta property="og:type" content="website"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -281,14 +281,43 @@
 
 <!-- NAV -->
 <nav>
-  <a class="logo" href="#"><span>FLOW</span>GEN</a>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('music',this)">🎵 MUSIC</button>
-    <button class="nav-tab" onclick="switchTab('rap',this)">🎤 RAP FLOW</button>
+  <a class="logo" href="#"><span>MYOWN</span>BEAT</a>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="nav-tab" id="nav-studio-btn" onclick="enterStudio()" style="background:var(--accent);color:#fff;border-color:var(--accent)">ENTER STUDIO ↓</button>
   </div>
 </nav>
 
-<main>
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero-section" style="position:relative;width:100%;height:100vh;overflow:hidden;background:linear-gradient(135deg,#F0F4FF 0%,#EEF2FF 40%,#F5F0FF 70%,#FFF0F8 100%);">
+  <!-- 그리드 오버레이 -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(43,92,230,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(43,92,230,0.04) 1px,transparent 1px);background-size:48px 48px;z-index:1;"></div>  <!-- Three.js canvas -->
+  <canvas id="hero-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+
+  <!-- Hero text overlay -->
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:10;">
+    <div style="font-family:'Space Mono',monospace;font-size:clamp(3rem,8vw,7rem);font-weight:700;letter-spacing:-0.04em;line-height:1;text-align:center;color:#1A1A1A;">
+      <span style="color:#2B5CE6;">MYOWN</span>BEAT
+    </div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1rem,2.5vw,1.4rem);color:#6B6860;margin-top:18px;text-align:center;max-width:520px;line-height:1.5;">
+      Type how you feel.<br/>AI turns it into music.
+    </div>
+    <div style="margin-top:36px;display:flex;gap:12px;pointer-events:all;">
+      <button onclick="enterStudio()" style="padding:14px 36px;border-radius:999px;background:#2B5CE6;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(43,92,230,.35);"
+        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(43,92,230,.45)'"
+        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(43,92,230,.35)'">
+        START CREATING
+      </button>
+    </div>
+    <div style="margin-top:28px;font-family:'Space Mono',monospace;font-size:.72rem;color:#B8B4AC;letter-spacing:.1em;">
+      SCROLL DOWN · FREE · ANY LANGUAGE
+    </div>
+  </div>
+
+  <!-- wave visualizer bar at bottom -->
+  <canvas id="wave-canvas" style="position:absolute;bottom:0;left:0;width:100%;height:120px;z-index:5;"></canvas>
+</section>
+
+<main id="studio-main" style="display:none;flex:1;">
 
 <!-- ═══════════════ MUSIC TAB ═══════════════ -->
 <div id="tab-music" class="tab-content active">
@@ -297,12 +326,12 @@
   <div class="panel-left">
 
     <div class="prompt-wrap">
-      <div class="section-label">프롬프트</div>
-      <textarea id="music-prompt" placeholder="예) 마누라한테 혼나서 억울한 느낌, 비오는 밤 감성, 보스전 BGM…&#10;자유롭게 써주세요. 길수록 정확해집니다."></textarea>
+      <div class="section-label">PROMPT</div>
+      <textarea id="music-prompt" placeholder="e.g. feeling frustrated after an argument, late night drive, boss battle BGM…&#10;Any language works. The more detail, the better."></textarea>
     </div>
 
     <div>
-      <div class="section-label">장르</div>
+      <div class="section-label">GENRE</div>
       <div class="chips" id="genre-chips">
         <div class="chip active" data-group="genre">Trap</div>
         <div class="chip" data-group="genre">Lo-fi</div>
@@ -322,7 +351,7 @@
     </div>
 
     <div>
-      <div class="section-label">분위기</div>
+      <div class="section-label">MOOD</div>
       <div class="chips" id="mood-chips">
         <div class="chip active-mood" data-group="mood">Chill</div>
         <div class="chip" data-group="mood">Dark</div>
@@ -337,37 +366,36 @@
     </div>
 
     <div>
-      <div class="section-label">악기 (복수 선택)</div>
+      <div class="section-label">INSTRUMENTS (multi-select)</div>
       <div class="chips" id="instr-chips">
-        <div class="chip" data-group="instr">피아노</div>
-        <div class="chip" data-group="instr">바이올린</div>
-        <div class="chip" data-group="instr">첼로</div>
-        <div class="chip" data-group="instr">가야금</div>
-        <div class="chip" data-group="instr">해금</div>
-        <div class="chip" data-group="instr">기타</div>
-        <div class="chip" data-group="instr">베이스</div>
-        <div class="chip" data-group="instr">신스패드</div>
-        <div class="chip" data-group="instr">플룻</div>
-        <div class="chip" data-group="instr">트럼펫</div>
-        <div class="chip" data-group="instr">드럼</div>
+        <div class="chip" data-group="instr">Piano</div>
+        <div class="chip" data-group="instr">Violin</div>
+        <div class="chip" data-group="instr">Cello</div>
+        <div class="chip" data-group="instr">Gayageum</div>
+        <div class="chip" data-group="instr">Haegeum</div>
+        <div class="chip" data-group="instr">Guitar</div>
+        <div class="chip" data-group="instr">Bass</div>
+        <div class="chip" data-group="instr">Synth Pad</div>
+        <div class="chip" data-group="instr">Flute</div>
+        <div class="chip" data-group="instr">Trumpet</div>
+        <div class="chip" data-group="instr">Drums</div>
         <div class="chip" data-group="instr">808</div>
       </div>
     </div>
 
     <div>
-      <div class="section-label">복잡도</div>
+      <div class="section-label">COMPLEXITY</div>
       <div class="complexity-row">
-        <button class="complexity-btn" data-val="simple" onclick="setComplexity(this)">Simple<br/><span style="font-size:.65rem;font-weight:400;color:inherit">5~8줄</span></button>
-        <button class="complexity-btn active" data-val="standard" onclick="setComplexity(this)">Standard<br/><span style="font-size:.65rem;font-weight:400;color:inherit">12~18줄</span></button>
-        <button class="complexity-btn" data-val="rich" onclick="setComplexity(this)">Rich<br/><span style="font-size:.65rem;font-weight:400;color:inherit">22~30줄</span></button>
-        <button class="complexity-btn" data-val="epic" onclick="setComplexity(this)">Epic<br/><span style="font-size:.65rem;font-weight:400;color:inherit">35줄+</span></button>
+        <button class="complexity-btn" data-val="simple" onclick="setComplexity(this)">Simple<br/><span style="font-size:.65rem;font-weight:400;color:inherit">5~8 lines</span></button>
+        <button class="complexity-btn active" data-val="standard" onclick="setComplexity(this)">Standard<br/><span style="font-size:.65rem;font-weight:400;color:inherit">12~18 lines</span></button>
+        <button class="complexity-btn" data-val="rich" onclick="setComplexity(this)">Rich<br/><span style="font-size:.65rem;font-weight:400;color:inherit">22~30 lines</span></button>
+        <button class="complexity-btn" data-val="epic" onclick="setComplexity(this)">Epic<br/><span style="font-size:.65rem;font-weight:400;color:inherit">35+ lines</span></button>
       </div>
     </div>
 
     <div>
       <div class="section-label">
-        BPM &nbsp;
-        <span style="font-family:var(--mono);font-size:.75rem;color:var(--text);" id="bpm-display">120</span>
+        BPM &nbsp;<span style="font-family:var(--mono);font-size:.75rem;color:var(--text);" id="bpm-display">120</span>
       </div>
       <input type="range" id="bpm-slider" min="60" max="200" value="120"
         oninput="document.getElementById('bpm-display').textContent=this.value"/>
@@ -375,7 +403,7 @@
 
     <button class="btn-gen" id="btn-music-gen" onclick="generateMusic()">
       <span id="gen-icon">▶</span>
-      <span id="gen-text">STRUDEL 코드 생성</span>
+      <span id="gen-text">GENERATE STRUDEL CODE</span>
       <div class="spinner" id="gen-spinner" style="display:none"></div>
     </button>
 
@@ -398,24 +426,24 @@
 
     <!-- code box -->
     <div class="code-box" id="code-box">
-      <pre class="code-placeholder">// 왼쪽에서 프롬프트를 입력하고
-// STRUDEL 코드 생성 버튼을 누르세요.
+      <pre class="code-placeholder">// Enter a prompt on the left and hit
+// GENERATE STRUDEL CODE.
 //
-// 장르 · 분위기 · 악기를 조합하면
-// 더 정확한 음악이 만들어집니다.
+// Combine genre · mood · instruments
+// for more precise results.
 //
-// 생성된 코드는 strudel.cc에
-// 붙여넣으면 바로 재생됩니다.</pre>
+// Copy the code → paste into strudel.cc
+// → hit play. Done.</pre>
     </div>
 
     <!-- info grid -->
     <div class="info-grid" id="info-grid" style="display:none">
       <div class="info-card">
-        <div class="info-card-label">장르</div>
+        <div class="info-card-label">GENRE</div>
         <div class="info-card-val" id="info-genre">—</div>
       </div>
       <div class="info-card">
-        <div class="info-card-label">분위기</div>
+        <div class="info-card-label">MOOD</div>
         <div class="info-card-val" id="info-mood">—</div>
       </div>
       <div class="info-card">
@@ -423,7 +451,7 @@
         <div class="info-card-val" id="info-bpm">—</div>
       </div>
       <div class="info-card" style="grid-column:span 3">
-        <div class="info-card-label">악기 레이어</div>
+        <div class="info-card-label">INSTRUMENT LAYERS</div>
         <div class="info-card-val" id="info-instrs" style="font-size:.85rem">—</div>
       </div>
     </div>
@@ -431,12 +459,12 @@
     <!-- embed note -->
     <div class="embed-wrap" id="embed-tip" style="display:none">
       <div class="embed-header">
-        <span class="embed-label">💡 재생 방법</span>
+        <span class="embed-label">💡 HOW TO PLAY</span>
       </div>
       <div style="padding:14px 16px;font-size:.82rem;color:var(--text-muted);line-height:1.6">
-        1. 위 <strong>COPY</strong> 버튼으로 코드 복사<br/>
-        2. <a href="https://strudel.cc" target="_blank" style="color:var(--accent)">strudel.cc</a> 접속 → 붙여넣기 → ▶ 재생<br/>
-        3. 화면 녹화하면 바로 릴스 소재!
+        1. Hit <strong>COPY</strong> to copy the code<br/>
+        2. Go to <a href="https://strudel.cc" target="_blank" style="color:var(--accent)">strudel.cc</a> → paste → ▶ play<br/>
+        3. Screen record it → instant Reels content!
       </div>
     </div>
 
@@ -451,12 +479,12 @@
   <!-- LEFT PANEL -->
   <div class="panel-left">
     <div class="prompt-wrap">
-      <div class="section-label">가사 입력</div>
-      <textarea id="rap-lyrics" placeholder="가사나 문장을 입력하세요.&#10;한국어 / 영어 모두 가능합니다." style="min-height:120px"></textarea>
+      <div class="section-label">LYRICS</div>
+      <textarea id="rap-lyrics" placeholder="Enter your lyrics or bars here.&#10;Any language works — Korean, English, etc." style="min-height:120px"></textarea>
     </div>
 
     <div>
-      <div class="section-label">플로우 스타일</div>
+      <div class="section-label">FLOW STYLE</div>
       <div class="chips" id="flow-chips">
         <div class="chip active" data-group="flow">Trap</div>
         <div class="chip" data-group="flow">Boom Bap</div>
@@ -470,15 +498,14 @@
 
     <div>
       <div class="section-label">
-        BPM &nbsp;
-        <span style="font-family:var(--mono);font-size:.75rem;color:var(--text);" id="rap-bpm-display">90</span>
+        BPM &nbsp;<span style="font-family:var(--mono);font-size:.75rem;color:var(--text);" id="rap-bpm-display">90</span>
       </div>
       <input type="range" id="rap-bpm-slider" min="60" max="180" value="90"
         oninput="document.getElementById('rap-bpm-display').textContent=this.value"/>
     </div>
 
     <div>
-      <div class="section-label">난이도</div>
+      <div class="section-label">DIFFICULTY</div>
       <div class="complexity-row">
         <button class="complexity-btn" data-val="easy" onclick="setFlowDiff(this)">Easy</button>
         <button class="complexity-btn active" data-val="medium" onclick="setFlowDiff(this)">Medium</button>
@@ -489,7 +516,7 @@
 
     <button class="btn-gen" id="btn-rap-gen" onclick="generateRap()">
       <span id="rap-gen-icon">▶</span>
-      <span id="rap-gen-text">플로우 생성</span>
+      <span id="rap-gen-text">ANALYZE FLOW</span>
       <div class="spinner" id="rap-gen-spinner" style="display:none"></div>
     </button>
   </div>
@@ -497,32 +524,32 @@
   <!-- RIGHT PANEL -->
   <div class="panel-right">
     <div class="code-header">
-      <span class="code-label">플로우 분석</span>
+      <span class="code-label">FLOW ANALYSIS</span>
     </div>
 
     <div class="stat-row" id="rap-stats" style="display:none">
       <div class="stat-card">
         <div class="stat-num" id="stat-syllables">—</div>
-        <div class="stat-lbl">음절 수</div>
+        <div class="stat-lbl">SYLLABLES</div>
       </div>
       <div class="stat-card">
         <div class="stat-num" id="stat-score">—</div>
-        <div class="stat-lbl">플로우 점수</div>
+        <div class="stat-lbl">FLOW SCORE</div>
       </div>
       <div class="stat-card">
         <div class="stat-num" id="stat-density">—</div>
-        <div class="stat-lbl">밀도(음절/박)</div>
+        <div class="stat-lbl">DENSITY</div>
       </div>
       <div class="stat-card">
         <div class="stat-num" id="stat-diff">—</div>
-        <div class="stat-lbl">난이도</div>
+        <div class="stat-lbl">DIFFICULTY</div>
       </div>
     </div>
 
     <div class="flow-visual" id="flow-visual">
       <span style="color:#B8B4AC;font-family:var(--mono);font-size:.8rem">
-가사를 입력하고 플로우 생성 버튼을 누르세요.
-킥·스네어 위치와 강세를 시각화해드립니다.</span>
+Enter your lyrics and hit ANALYZE FLOW.
+Kick · snare positions and stress patterns will be visualized here.</span>
     </div>
 
     <div class="code-box" id="rap-analysis-box" style="display:none;min-height:180px">
@@ -536,8 +563,8 @@
 </main>
 
 <footer>
-  FLOWGEN — AI Music Studio · Powered by Claude &nbsp;·&nbsp;
-  <a href="https://strudel.cc" target="_blank">strudel.cc</a> &nbsp;·&nbsp; Free & Open
+  MYOWNBEAT — AI Music Studio · Powered by Claude &nbsp;·&nbsp;
+  <a href="https://strudel.cc" target="_blank">strudel.cc</a> &nbsp;·&nbsp; Free & Open · Any language prompt supported
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -744,25 +771,25 @@ function fallbackMusic(genre, mood, bpm, instrs, complexity, prompt='') {
   // 악기 레이어 빌드
   const layers = [];
 
-  if (instrs.includes('피아노')) {
+  if (instrs.includes('Piano')) {
     layers.push(`  note(${sc.mel}).s("piano").room(${roomVal})${delayVal}.gain(0.55), // piano`);
   }
-  if (instrs.includes('바이올린') || instrs.includes('첼로')) {
+  if (instrs.includes('Violin') || instrs.includes('Cello')) {
     layers.push(`  note(${sc.hi}).s("supersaw").cutoff(${cutoff}).room(0.9)${delayVal}.gain(0.4).slow(2), // strings`);
   }
-  if (instrs.includes('가야금') || instrs.includes('해금')) {
-    layers.push(`  note("<c4 d4 f4 g4 bb4>/2").s("zither").room(0.95).delay(0.4).gain(0.5), // korean`);
+  if (instrs.includes('Gayageum') || instrs.includes('Haegeum')) {
+    layers.push(`  note("<c4 d4 f4 g4 bb4>/2").s("zither").room(0.95).delay(0.4).gain(0.5), // korean strings`);
   }
-  if (instrs.includes('플룻')) {
+  if (instrs.includes('Flute')) {
     layers.push(`  note(${sc.hi}).s("flute").room(0.7).gain(0.4).slow(2), // flute`);
   }
-  if (instrs.includes('기타')) {
+  if (instrs.includes('Guitar')) {
     layers.push(`  note(${sc.mel}).s("guitar").room(0.5).gain(0.45), // guitar`);
   }
-  if (instrs.includes('신스패드')) {
-    layers.push(`  note(${sc.bass}).s("pad").cutoff(${cutoff}).room(0.95).gain(0.3).slow(4), // pad`);
+  if (instrs.includes('Synth Pad')) {
+    layers.push(`  note(${sc.bass}).s("pad").cutoff(${cutoff}).room(0.95).gain(0.3).slow(4), // synth pad`);
   }
-  if (instrs.includes('트럼펫')) {
+  if (instrs.includes('Trumpet')) {
     layers.push(`  note(${sc.hi}).s("supermandolin").cutoff(3000).room(0.6).gain(0.4), // trumpet`);
   }
   if (instrs.includes('808')) {
@@ -865,7 +892,7 @@ function updateInfoCards(bpm, instrList) {
 function setMusicLoading(on) {
   document.getElementById('btn-music-gen').disabled = on;
   document.getElementById('gen-icon').style.display = on ? 'none' : 'inline';
-  document.getElementById('gen-text').textContent = on ? '생성 중...' : 'STRUDEL 코드 생성';
+  document.getElementById('gen-text').textContent = on ? 'Generating...' : 'GENERATE STRUDEL CODE';
   document.getElementById('gen-spinner').style.display = on ? 'block' : 'none';
 }
 
@@ -884,7 +911,7 @@ const RAP_SYS = `You are a professional rap flow analyst and hip-hop producer. A
 
 async function generateRap() {
   const lyrics = document.getElementById('rap-lyrics').value.trim();
-  if (!lyrics) { showToast('가사를 입력하세요!'); return; }
+  if (!lyrics) { showToast('Enter your lyrics first!'); return; }
   const bpm = document.getElementById('rap-bpm-slider').value;
   setRapLoading(true);
 
@@ -922,7 +949,7 @@ async function generateRap() {
 function setRapLoading(on) {
   document.getElementById('btn-rap-gen').disabled = on;
   document.getElementById('rap-gen-icon').style.display = on ? 'none' : 'inline';
-  document.getElementById('rap-gen-text').textContent = on ? '분석 중...' : '플로우 생성';
+  document.getElementById('rap-gen-text').textContent = on ? 'Analyzing...' : 'ANALYZE FLOW';
   document.getElementById('rap-gen-spinner').style.display = on ? 'block' : 'none';
 }
 
@@ -931,7 +958,7 @@ function setRapLoading(on) {
 ════════════════════════════════════════ */
 function copyCode() {
   if (!state.code) return;
-  navigator.clipboard.writeText(state.code).then(() => showToast('코드 복사 완료! strudel.cc에 붙여넣으세요'));
+  navigator.clipboard.writeText(state.code).then(() => showToast('Copied! Paste into strudel.cc and hit play 🎵'));
 }
 
 function openStrudel() {
@@ -945,12 +972,414 @@ function showToast(msg, dur=2500) {
 }
 </script>
 
+<!-- THREE.JS HERO -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ══════════════════════════════════════
+   HERO — Three.js 3D scene
+══════════════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+  camera.position.set(0, 0, 14);
+
+  // Lights
+  const ambLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambLight);
+  const dirLight = new THREE.DirectionalLight(0x2B5CE6, 1.2);
+  dirLight.position.set(5, 8, 5);
+  scene.add(dirLight);
+  const pinkLight = new THREE.PointLight(0xff6ec7, 0.8, 30);
+  pinkLight.position.set(-6, -4, 4);
+  scene.add(pinkLight);
+  const goldLight = new THREE.PointLight(0xffd966, 0.6, 20);
+  goldLight.position.set(6, 4, 2);
+  scene.add(goldLight);
+
+  // Materials
+  const mats = [
+    new THREE.MeshPhongMaterial({ color: 0x2B5CE6, shininess: 120, specular: 0x88aaff }),
+    new THREE.MeshPhongMaterial({ color: 0xff6ec7, shininess: 100, specular: 0xffaadd }),
+    new THREE.MeshPhongMaterial({ color: 0xffd966, shininess: 80,  specular: 0xffeeaa }),
+    new THREE.MeshPhongMaterial({ color: 0x0F9B6E, shininess: 100, specular: 0x88ffcc }),
+    new THREE.MeshPhongMaterial({ color: 0xe63946, shininess: 90,  specular: 0xff8888 }),
+    new THREE.MeshPhongMaterial({ color: 0x9B59B6, shininess: 110, specular: 0xcc88ff }),
+  ];
+
+  // Instrument-like 3D shapes
+  const objects = [];
+
+  function makePiano(mat) {
+    const g = new THREE.Group();
+    // body
+    const body = new THREE.Mesh(new THREE.BoxGeometry(2.4,0.5,1.2), mat);
+    g.add(body);
+    // keys
+    for (let i=0;i<7;i++){
+      const k = new THREE.Mesh(new THREE.BoxGeometry(0.27,0.12,0.9), new THREE.MeshPhongMaterial({color:0xffffff,shininess:60}));
+      k.position.set(-0.9+i*0.3, 0.31, 0.1);
+      g.add(k);
+    }
+    return g;
+  }
+
+  function makeViolin(mat) {
+    const g = new THREE.Group();
+    // body — two spheres + neck
+    const top = new THREE.Mesh(new THREE.SphereGeometry(0.5,16,12), mat);
+    top.position.y = 0.5; top.scale.set(1,1.2,0.5);
+    const bot = new THREE.Mesh(new THREE.SphereGeometry(0.65,16,12), mat);
+    bot.position.y = -0.5; bot.scale.set(1,1.3,0.5);
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.1,1.2,8), mat);
+    neck.position.y = 1.6;
+    g.add(top,bot,neck);
+    return g;
+  }
+
+  function makeDrum(mat) {
+    const g = new THREE.Group();
+    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.7,0.7,0.6,32), mat);
+    const top = new THREE.Mesh(new THREE.CircleGeometry(0.7,32), new THREE.MeshPhongMaterial({color:0xf0ede6,shininess:40}));
+    top.rotation.x = -Math.PI/2; top.position.y = 0.31;
+    g.add(cyl,top);
+    return g;
+  }
+
+  function makeNote(mat) {
+    const g = new THREE.Group();
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.3,12,8), mat);
+    head.scale.set(1.2,0.9,0.6);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.2,8), mat);
+    stem.position.set(0.28,0.7,0);
+    g.add(head,stem);
+    return g;
+  }
+
+  function makeWave(mat) {
+    const pts = [];
+    for(let i=0;i<=20;i++){
+      const x = (i/20)*4-2;
+      const y = Math.sin(i*0.8)*0.4;
+      pts.push(new THREE.Vector3(x,y,0));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const geo = new THREE.TubeGeometry(curve,30,0.06,8,false);
+    return new THREE.Mesh(geo,mat);
+  }
+
+  function makeGayageum(mat) {
+    const g = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.BoxGeometry(3,0.15,0.6), mat);
+    for(let i=0;i<12;i++){
+      const str = new THREE.Mesh(new THREE.CylinderGeometry(0.015,0.015,2.8,4), new THREE.MeshPhongMaterial({color:0xffd966}));
+      str.rotation.z = Math.PI/2;
+      str.position.set(0,0.1,-0.25+i*0.045);
+      g.add(str);
+    }
+    g.add(body);
+    return g;
+  }
+
+  /* ── AMP (앰프) + 소리파장 ── */
+  function makeAmp(mat) {
+    const g = new THREE.Group();
+    // 앰프 바디
+    const body = new THREE.Mesh(new THREE.BoxGeometry(2.2,1.8,1.0),
+      new THREE.MeshPhongMaterial({color:0x1a1a2e, shininess:80, specular:0x4444ff}));
+    g.add(body);
+    // 스피커 그릴 (원형)
+    const speaker = new THREE.Mesh(new THREE.CircleGeometry(0.62,48),
+      new THREE.MeshPhongMaterial({color:0x2B5CE6, shininess:40}));
+    speaker.position.set(-0.3,0.15,0.51);
+    g.add(speaker);
+    // 스피커 콘 (중앙 돌출)
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.18,0.18,16),
+      new THREE.MeshPhongMaterial({color:0x88aaff, shininess:120}));
+    cone.rotation.x = -Math.PI/2; cone.position.set(-0.3,0.15,0.62);
+    g.add(cone);
+    // 노브들
+    for(let i=0;i<3;i++){
+      const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.12,16),
+        new THREE.MeshPhongMaterial({color:0xffd966, shininess:100}));
+      knob.rotation.x = Math.PI/2;
+      knob.position.set(0.55+i*0.0, 0.4-i*0.35, 0.52);
+      g.add(knob);
+    }
+    // 상단 VU미터 바
+    for(let i=0;i<5;i++){
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.06,0.2+i*0.08,0.05),
+        new THREE.MeshPhongMaterial({
+          color: i<2 ? 0x0F9B6E : i<4 ? 0xffd966 : 0xe63946,
+          emissive: i<2 ? 0x0F9B6E : i<4 ? 0xffd966 : 0xe63946,
+          emissiveIntensity: 0.4
+        }));
+      bar.position.set(0.52, 0.55-i*0.07, 0.52);
+      g.add(bar);
+    }
+    return g;
+  }
+
+  /* ── 3D 소리파장 동심원 링 ── */
+  const ampGroup = new THREE.Group();
+  ampGroup.position.set(0, 0, 0);
+  scene.add(ampGroup);
+
+  // 앰프 본체 (화면 중앙에 고정)
+  const centerAmpMat = new THREE.MeshPhongMaterial({color:0x0d0d1a, shininess:120, specular:0x2B5CE6});
+  const centerAmp = makeAmp(centerAmpMat);
+  centerAmp.scale.setScalar(1.1);
+  ampGroup.add(centerAmp);
+
+  // 소리파장 동심원 — 3D 링 (TubeGeometry)
+  const waveRings = [];
+  const ringColors = [0x2B5CE6, 0x6ec6ff, 0xb392f0, 0xff6ec7, 0xffd966];
+  for(let i=0;i<5;i++){
+    const pts=[];
+    const r = 1.8 + i*1.1;
+    for(let j=0;j<=64;j++){
+      const a = (j/64)*Math.PI*2;
+      pts.push(new THREE.Vector3(Math.cos(a)*r, Math.sin(a)*r, 0));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts, true);
+    const geo = new THREE.TubeGeometry(curve, 64, 0.04-i*0.004, 8, true);
+    const mat2 = new THREE.MeshPhongMaterial({
+      color: ringColors[i],
+      emissive: ringColors[i],
+      emissiveIntensity: 0.3,
+      transparent: true,
+      opacity: 0.7 - i*0.1
+    });
+    const ring = new THREE.Mesh(geo, mat2);
+    ring.userData = { baseR: r, idx: i, phase: i*0.8 };
+    ampGroup.add(ring);
+    waveRings.push(ring);
+  }
+
+  // 앰프에서 나오는 방사형 선 (홀로그램 느낌)
+  const rayGeo = new THREE.BufferGeometry();
+  const rayCount = 24;
+  const rayVerts = new Float32Array(rayCount * 6);
+  for(let i=0;i<rayCount;i++){
+    const a = (i/rayCount)*Math.PI*2;
+    rayVerts[i*6]   = 0; rayVerts[i*6+1] = 0; rayVerts[i*6+2] = 0;
+    rayVerts[i*6+3] = Math.cos(a)*7; rayVerts[i*6+4] = Math.sin(a)*7; rayVerts[i*6+5] = 0;
+  }
+  rayGeo.setAttribute('position', new THREE.BufferAttribute(rayVerts,3));
+  const rayMat = new THREE.LineBasicMaterial({color:0x2B5CE6, transparent:true, opacity:0.08});
+  const rays = new THREE.LineSegments(rayGeo, rayMat);
+  ampGroup.add(rays);
+
+  /* ── VU 미터 바 애니메이션용 ── */
+  const vuBars = [];
+  for(let i=0;i<12;i++){
+    const h = 0.1+Math.random()*1.2;
+    const bar = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, h, 0.08),
+      new THREE.MeshPhongMaterial({
+        color: i<4?0x0F9B6E:i<8?0x2B5CE6:0xff6ec7,
+        emissive: i<4?0x0F9B6E:i<8?0x2B5CE6:0xff6ec7,
+        emissiveIntensity:0.5, transparent:true, opacity:0.85
+      })
+    );
+    bar.position.set(-0.9+i*0.16, -1.5, 0.6);
+    bar.userData = { baseH: h, phase: i*0.4 };
+    ampGroup.add(bar);
+    vuBars.push(bar);
+  }
+
+  // Spawn objects
+  const spawners = [makePiano, makeViolin, makeDrum, makeNote, makeWave, makeGayageum];
+  const floatData = [];
+
+  for(let i=0;i<18;i++){
+    const fn = spawners[i % spawners.length];
+    const mat = mats[i % mats.length].clone();
+    const obj = fn(mat);
+    const scale = 0.4 + Math.random()*0.5;
+    obj.scale.setScalar(scale);
+    obj.position.set(
+      (Math.random()-0.5)*22,
+      (Math.random()-0.5)*16,
+      (Math.random()-0.5)*8 - 2
+    );
+    obj.rotation.set(Math.random()*Math.PI*2, Math.random()*Math.PI*2, Math.random()*Math.PI*2);
+    scene.add(obj);
+    floatData.push({
+      obj,
+      speedX: (Math.random()-0.5)*0.003,
+      speedY: (Math.random()-0.5)*0.003,
+      rotX:   (Math.random()-0.5)*0.012,
+      rotY:   (Math.random()-0.5)*0.012,
+      rotZ:   (Math.random()-0.5)*0.008,
+      floatAmp: 0.3+Math.random()*0.5,
+      floatFreq: 0.4+Math.random()*0.6,
+      phase: Math.random()*Math.PI*2,
+      baseY: obj.position.y
+    });
+  }
+
+  // Particles
+  const partCount = 120;
+  const partGeo = new THREE.BufferGeometry();
+  const partPos = new Float32Array(partCount*3);
+  const partSpeeds = [];
+  for(let i=0;i<partCount;i++){
+    partPos[i*3]   = (Math.random()-0.5)*30;
+    partPos[i*3+1] = (Math.random()-0.5)*20;
+    partPos[i*3+2] = (Math.random()-0.5)*10;
+    partSpeeds.push({ x:(Math.random()-0.5)*0.02, y:(Math.random()-0.5)*0.02 });
+  }
+  partGeo.setAttribute('position', new THREE.BufferAttribute(partPos, 3));
+  const partMat = new THREE.PointsMaterial({ color:0x2B5CE6, size:0.08, transparent:true, opacity:0.4 });
+  const particles = new THREE.Points(partGeo, partMat);
+  scene.add(particles);
+
+  // Mouse parallax
+  let mouseX=0, mouseY=0;
+  window.addEventListener('mousemove', e=>{
+    mouseX = (e.clientX/window.innerWidth-0.5)*2;
+    mouseY = -(e.clientY/window.innerHeight-0.5)*2;
+  });
+
+  // Click burst
+  canvas.addEventListener('click', e=>{
+    floatData.forEach(d=>{
+      d.speedX += (Math.random()-0.5)*0.02;
+      d.speedY += (Math.random()-0.5)*0.02;
+    });
+  });
+
+  // Resize
+  window.addEventListener('resize', ()=>{
+    const w=canvas.clientWidth, h=canvas.clientHeight;
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h; camera.updateProjectionMatrix();
+  });
+
+  // Animate
+  let t=0;
+  function animate(){
+    if(!document.getElementById('hero-section')) return;
+    requestAnimationFrame(animate);
+    t += 0.016;
+
+    // camera parallax
+    camera.position.x += (mouseX*2 - camera.position.x)*0.04;
+    camera.position.y += (mouseY*1.5 - camera.position.y)*0.04;
+    camera.lookAt(0,0,0);
+
+    // float objects
+    floatData.forEach(d=>{
+      d.obj.position.x += d.speedX;
+      d.obj.position.y = d.baseY + Math.sin(t*d.floatFreq+d.phase)*d.floatAmp;
+      d.obj.rotation.x += d.rotX;
+      d.obj.rotation.y += d.rotY;
+      d.obj.rotation.z += d.rotZ;
+      d.speedX *= 0.995;
+      // wrap
+      if(d.obj.position.x > 14) d.obj.position.x = -14;
+      if(d.obj.position.x < -14) d.obj.position.x = 14;
+    });
+
+    // particles drift
+    const pos = particles.geometry.attributes.position.array;
+    for(let i=0;i<partCount;i++){
+      pos[i*3]   += partSpeeds[i].x;
+      pos[i*3+1] += partSpeeds[i].y;
+      if(Math.abs(pos[i*3])>15) partSpeeds[i].x*=-1;
+      if(Math.abs(pos[i*3+1])>12) partSpeeds[i].y*=-1;
+    }
+    particles.geometry.attributes.position.needsUpdate=true;
+
+    // AMP 천천히 회전 (y축)
+    ampGroup.rotation.y = Math.sin(t*0.25)*0.35;
+    ampGroup.position.y = Math.sin(t*0.4)*0.3;
+
+    // 소리파장 동심원 — 펄스 + 스케일 파장
+    waveRings.forEach((ring,i)=>{
+      const pulse = 1 + Math.sin(t*2.5 - i*0.7 + ring.userData.phase)*0.18;
+      ring.scale.set(pulse, pulse, 1);
+      ring.material.emissiveIntensity = 0.2 + Math.sin(t*3 - i*0.9)*0.3;
+      ring.material.opacity = 0.5 + Math.sin(t*2 - i*0.6)*0.25;
+      ring.rotation.z += 0.002 * (i%2===0?1:-1);
+    });
+
+    // VU 미터 바 춤추기
+    vuBars.forEach((bar,i)=>{
+      const h = 0.1 + Math.abs(Math.sin(t*3.5+bar.userData.phase))*1.4;
+      bar.scale.y = h;
+      bar.position.y = -1.5 + (h*0.12)/2;
+    });
+
+    // 방사선 opacity pulse
+    rays.material.opacity = 0.04 + Math.sin(t*2)*0.06;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  /* ── WAVE CANVAS ── */
+  const wc = document.getElementById('wave-canvas');
+  const wx = wc.getContext('2d');
+  let wt=0;
+  function drawWave(){
+    if(!document.getElementById('hero-section')) return;
+    requestAnimationFrame(drawWave);
+    wt+=0.03;
+    wc.width=wc.offsetWidth; wc.height=wc.offsetHeight;
+    const W=wc.width, H=wc.height;
+    wx.clearRect(0,0,W,H);
+
+    const waves=[
+      {amp:28,freq:0.012,speed:1.2,color:'rgba(43,92,230,0.18)',offset:0},
+      {amp:20,freq:0.018,speed:0.9,color:'rgba(43,92,230,0.12)',offset:1.2},
+      {amp:35,freq:0.008,speed:0.6,color:'rgba(43,92,230,0.08)',offset:2.5},
+    ];
+
+    waves.forEach(w=>{
+      wx.beginPath();
+      wx.moveTo(0,H);
+      for(let x=0;x<=W;x+=2){
+        const y = H/2 + Math.sin(x*w.freq + wt*w.speed + w.offset)*w.amp
+                       + Math.sin(x*w.freq*1.7 + wt*w.speed*1.3)*w.amp*0.4;
+        x===0 ? wx.moveTo(x,y) : wx.lineTo(x,y);
+      }
+      wx.lineTo(W,H); wx.lineTo(0,H); wx.closePath();
+      wx.fillStyle=w.color; wx.fill();
+    });
+  }
+  drawWave();
+})();
+
+/* ══════════════════════════════════════
+   ENTER STUDIO
+══════════════════════════════════════ */
+function enterStudio(){
+  const hero = document.getElementById('hero-section');
+  const studio = document.getElementById('studio-main');
+  hero.style.transition='opacity .5s';
+  hero.style.opacity='0';
+  setTimeout(()=>{
+    hero.style.display='none';
+    studio.style.display='flex';
+  }, 500);
+}
+</script>
+
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@type":"WebApplication",
-  "name":"FLOWGEN",
+  "name":"MYOWNBEAT",
   "description":"AI-powered music code generator and rap flow analyzer",
   "url":"https://musicplatform-dsa.pages.dev",
   "applicationCategory":"MusicApplication",
