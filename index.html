@@ -645,38 +645,164 @@ Rules:
 }
 
 /* ════════════════════════════════════════
-   FALLBACK MUSIC CODE
+   감정 키워드 파싱 엔진
 ════════════════════════════════════════ */
-function fallbackMusic(genre, mood, bpm, instrs, complexity) {
+function parseEmotion(text) {
+  const t = text;
+  const e = {
+    scale: 'major', tempo: 'mid', space: 'mid',
+    energy: 'mid', tension: false, chaos: false,
+    tags: []
+  };
+
+  // 슬픔/우울
+  if (/슬|우울|눈물|외롭|그립|허전|공허|쓸쓸|힘들|지쳐|피곤|지침/.test(t)) {
+    e.scale='minor'; e.space='wet'; e.tempo='slow'; e.tags.push('sad');
+  }
+  // 억울/짜증/분노
+  if (/억울|짜증|화나|열받|빡|미치|답답|싫|짜|화가/.test(t)) {
+    e.tension=true; e.energy='high'; e.scale='minor'; e.tags.push('angry');
+  }
+  // 설렘/기쁨/신남
+  if (/설레|기쁘|신나|행복|좋아|즐|흥분|두근|기대|웃/.test(t)) {
+    e.scale='major'; e.energy='high'; e.space='dry'; e.tags.push('happy');
+  }
+  // 몽환/드림
+  if (/몽환|꿈|취한|흐릿|안개|노을|새벽|밤|별|달/.test(t)) {
+    e.space='wet'; e.tempo='slow'; e.tags.push('dreamy');
+  }
+  // 긴장/공포/불안
+  if (/무서|공포|불안|긴장|두렵|떨|조마|으스/.test(t)) {
+    e.tension=true; e.chaos=true; e.scale='phrygian'; e.tags.push('tense');
+  }
+  // 드라이브/자유
+  if (/드라이브|달리|자유|바람|질주|도망|나가/.test(t)) {
+    e.energy='high'; e.tempo='fast'; e.tags.push('free');
+  }
+  // 비/날씨/감성
+  if (/비|눈|흐린|구름|창문|카페|커피|혼자/.test(t)) {
+    e.space='wet'; e.tempo='slow'; e.tags.push('lofi');
+  }
+  // 영어도 체크
+  if (/sad|depress|lonely|miss/.test(t)) { e.scale='minor'; e.tags.push('sad'); }
+  if (/angry|mad|frustrat/.test(t))       { e.tension=true; e.tags.push('angry'); }
+  if (/happy|joy|excit/.test(t))          { e.scale='major'; e.tags.push('happy'); }
+
+  return e;
+}
+
+/* ════════════════════════════════════════
+   감정 → 음악 파라미터 변환
+════════════════════════════════════════ */
+function fallbackMusic(genre, mood, bpm, instrs, complexity, prompt='') {
+  // 감정 파싱
+  const em = parseEmotion(prompt + ' ' + mood);
+
+  // 스케일 결정
+  const scales = {
+    minor:    { bass:'"c3 eb3 g3 bb3"', mel:'"<c4 eb4 g4 bb4>/2"', hi:'"<c5 eb5 g5>/3"' },
+    major:    { bass:'"c3 e3 g3 b3"',   mel:'"<c4 e4 g4 b4>/2"',   hi:'"<e5 g5 b5>/3"' },
+    phrygian: { bass:'"c3 db3 g3 bb3"', mel:'"<c4 db4 ab4 bb4>/2"',hi:'"<c5 db5 ab5>/3"' }
+  };
+  const sc = scales[em.scale] || scales.major;
+
   const cps = (bpm/60/4).toFixed(3);
-  const minor = mood === 'Sad' || mood === 'Dark';
-  const notes = minor ? '"c3 eb3 g3 bb3"' : '"c3 e3 g3 b3"';
-  const melNotes = minor ? '"<c4 eb4 g4 bb4>/2"' : '"<c4 e4 g4 b4>/2"';
-  const hh = genre === 'Drill' ? '"hh*8"' : genre === 'Trap' ? '"hh*16"' : '"hh*4"';
-  const instrLine = instrs.includes('바이올린') || instrs.includes('첼로')
-    ? `  note("${minor?'<c4 eb4 bb3>':'<c4 e4 b3>'}").s("supersaw").room(0.9).cutoff(1800).gain(0.4), // violin/cello`
-    : instrs.includes('피아노')
-    ? `  note("${minor?'<c4 eb4 g4 bb4>':'<c4 e4 g4 b4>'}").s("piano").room(0.6).gain(0.5), // piano`
-    : instrs.includes('가야금') || instrs.includes('해금')
-    ? `  note("<c4 d4 f4 g4>/2").s("zither").room(0.95).delay(0.4).gain(0.5), // gayageum`
-    : `  note(${melNotes}).s("pad").room(0.8).gain(0.35), // synth pad`;
 
-  const richLayers = complexity === 'rich' || complexity === 'epic' ? `
-  // atmosphere
-  note("<c2 g2 bb2>/4").s("supersaw").cutoff(300).room(0.95).gain(0.25),
-  // perc
-  s("cp").every(4,x=>x.speed(0.7)).gain(0.5),` : '';
+  // 드럼 패턴
+  const drumPatterns = {
+    Trap:      { bd:'"bd ~ ~ ~ bd ~ ~ ~"', sd:'"~ ~ ~ sd ~ ~ ~ sd"', hh:`"hh*16"` },
+    Drill:     { bd:'"bd ~ bd ~ ~ bd ~ ~"', sd:'"~ ~ sd ~ ~ ~ sd ~"', hh:`"hh*8"` },
+    'Boom Bap':{ bd:'"bd ~ ~ ~ bd ~ bd ~"', sd:'"~ sd ~ ~ ~ sd ~ ~"', hh:`"hh*4"` },
+    'Lo-fi':   { bd:'"bd ~ ~ bd ~ ~ bd ~"', sd:'"~ ~ sd ~ ~ ~ sd ~"', hh:`"[hh ~]*4"` },
+    Techno:    { bd:'"bd ~ bd ~ bd ~ bd ~"', sd:'"~ ~ ~ ~ sd ~ ~ ~"', hh:`"hh*8"` },
+    House:     { bd:'"bd ~ bd ~ bd ~ bd ~"', sd:'"~ sd ~ sd ~ sd ~ sd"', hh:`"hh*8"` },
+    Cinematic: { bd:'"bd ~ ~ ~ ~ ~ ~ ~"', sd:'"~ ~ ~ ~ sd ~ ~ ~"', hh:`"hh*2"` },
+  };
+  const dp = drumPatterns[genre] || drumPatterns['Trap'];
 
-  return `setcps(${cps})
+  // 에너지 → 하이햇 밀도
+  const hhFinal = em.energy==='high'
+    ? dp.hh.replace(/\*\d+/, n => `*${Math.min(parseInt(n.slice(1))*2,32)}`)
+    : em.tempo==='slow' ? dp.hh.replace(/\*\d+/, '*2') : dp.hh;
+
+  // 킥 패턴 (긴장 → 불규칙)
+  const bdFinal = em.tension
+    ? '"bd ~ bd bd ~ ~ bd ~"'
+    : dp.bd;
+
+  // bass: 긴장이면 빠르게
+  const bassMod = em.tension ? '.fast(2)' : em.tempo==='slow' ? '.slow(2)' : '';
+  const bassGain = em.energy==='high' ? '0.85' : '0.65';
+
+  // room/delay (공간감)
+  const roomVal = em.space==='wet' ? '0.92' : '0.4';
+  const delayVal = em.space==='wet' ? '.delay(0.35)' : '';
+
+  // cutoff (어둡거나 몽환 → 낮게)
+  const cutoff = em.scale==='minor' || em.tags.includes('dreamy') ? '600' : '1800';
+
+  // 악기 레이어 빌드
+  const layers = [];
+
+  if (instrs.includes('피아노')) {
+    layers.push(`  note(${sc.mel}).s("piano").room(${roomVal})${delayVal}.gain(0.55), // piano`);
+  }
+  if (instrs.includes('바이올린') || instrs.includes('첼로')) {
+    layers.push(`  note(${sc.hi}).s("supersaw").cutoff(${cutoff}).room(0.9)${delayVal}.gain(0.4).slow(2), // strings`);
+  }
+  if (instrs.includes('가야금') || instrs.includes('해금')) {
+    layers.push(`  note("<c4 d4 f4 g4 bb4>/2").s("zither").room(0.95).delay(0.4).gain(0.5), // korean`);
+  }
+  if (instrs.includes('플룻')) {
+    layers.push(`  note(${sc.hi}).s("flute").room(0.7).gain(0.4).slow(2), // flute`);
+  }
+  if (instrs.includes('기타')) {
+    layers.push(`  note(${sc.mel}).s("guitar").room(0.5).gain(0.45), // guitar`);
+  }
+  if (instrs.includes('신스패드')) {
+    layers.push(`  note(${sc.bass}).s("pad").cutoff(${cutoff}).room(0.95).gain(0.3).slow(4), // pad`);
+  }
+  if (instrs.includes('트럼펫')) {
+    layers.push(`  note(${sc.hi}).s("supermandolin").cutoff(3000).room(0.6).gain(0.4), // trumpet`);
+  }
+  if (instrs.includes('808')) {
+    layers.push(`  note("c1 ~ eb1 ~ f1 ~").s("sawtooth").cutoff(80).gain(0.9).slow(2), // 808`);
+  }
+  // 기본 멜로디 (아무 악기 없으면)
+  if (layers.length === 0) {
+    layers.push(`  note(${sc.mel}).s("pad").cutoff(${cutoff}).room(${roomVal})${delayVal}.gain(0.35), // synth`);
+  }
+
+  // 복잡도 레이어
+  const extraLayers = {
+    simple: '',
+    standard: `\n  // atmosphere\n  note(${sc.bass}).s("supersaw").cutoff(300).room(0.95).gain(0.2).slow(4),`,
+    rich: `\n  // atmosphere\n  note(${sc.bass}).s("supersaw").cutoff(300).room(0.95).gain(0.2).slow(4),
+  // perc\n  s("cp").every(4,x=>x.speed(0.7)).gain(0.45),
+  // counter melody\n  note(${sc.hi}).s("sine").gain(0.25).slow(3)${delayVal},`,
+    epic: `\n  // atmosphere\n  note(${sc.bass}).s("supersaw").cutoff(200).room(0.98).gain(0.25).slow(4),
+  // perc\n  s("cp ~ ~ cp ~ ~ cp ~").gain(0.5),
+  // counter\n  note(${sc.hi}).s("sine").gain(0.28).slow(3)${delayVal},
+  // rise\n  note(${sc.mel}).s("supersaw").cutoff(sine.range(200,2000)).room(0.9).gain(0.2),
+  // fx\n  s("hh").gain(sine.range(0,0.3)).fast(4),`
+  }[complexity] || '';
+
+  // 감정 태그 주석
+  const emotionComment = em.tags.length
+    ? `// 감정: ${em.tags.join(' + ')} | 스케일: ${em.scale} | 에너지: ${em.energy}\n`
+    : '';
+
+  return `${emotionComment}setcps(${cps})
 stack(
-  // drums
-  s("bd ~ ~ bd ~ ~ bd ~").gain(0.9),
-  s("~ sd ~ ~ ~ sd ~ ~").gain(0.75),
-  s(${hh}).gain(sine.range(0.2,0.5)),
+  // kick
+  s(${bdFinal}).gain(0.9),
+  // snare
+  s(${dp.sd}).gain(0.75),
+  // hihat
+  s(${hhFinal}).gain(sine.range(0.15,0.5)),
   // bass
-  note(${notes}).s("sawtooth").cutoff(400).gain(0.7).slow(2),
-  // melody
-${instrLine}${richLayers}
+  note(${sc.bass}).s("sawtooth").cutoff(500).gain(${bassGain})${bassMod},
+${layers.join('\n')}${extraLayers}
 )`;
 }
 
@@ -701,7 +827,7 @@ async function generateMusic() {
     // clean up
     code = code.replace(/```[\w]*/g,'').replace(/```/g,'').trim();
   } catch(e) {
-    code = fallbackMusic(state.genre, state.mood, bpm, state.instrs, complexity);
+    code = fallbackMusic(state.genre, state.mood, bpm, state.instrs, complexity, prompt);
   }
 
   state.code = code;
